@@ -1,0 +1,314 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* =========================================
+   GLOBAL
+========================================= */
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+html {
+  background: #f8fafc;
+}
+
+body {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+
+/* =========================================
+   LIGHT MODE
+========================================= */
+
+html.light,
+html.light body,
+body.light-mode {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+
+/* =========================================
+   LIGHT MODE - BACKGROUNDS
+========================================= */
+
+html.light .bg-slate-950 {
+  background-color: #ffffff !important;
+}
+
+html.light .bg-slate-900 {
+  background-color: #ffffff !important;
+}
+
+html.light .bg-slate-800 {
+  background-color: #f1f5f9 !important;
+}
+
+html.light .bg-slate-700 {
+  background-color: #e2e8f0 !important;
+}
+
+
+/* Dashboard custom backgrounds */
+
+html.light .bg-\[\#07111f\] {
+  background-color: #f8fafc !important;
+}
+
+html.light .bg-\[\#091525\] {
+  background-color: #ffffff !important;
+}
+
+
+/* =========================================
+   AI INSIGHTS CUSTOM BACKGROUNDS - LIGHT
+========================================= */
+
+html.light .bg-\[\#0b1728\] {
+  background-color: #ffffff !important;
+}
+
+html.light .bg-\[\#101e31\] {
+  background-color: #f8fafc !important;
+}
+
+html.light .bg-\[\#17150d\] {
+  background-color: #fffbeb !important;
+}
+
+
+/* =========================================
+   LIGHT MODE - TEXT
+========================================= */
+
+html.light .text-white {
+  color: #0f172a !important;
+}
+
+html.light .text-slate-100 {
+  color: #1e293b !important;
+}
+
+html.light .text-slate-200 {
+  color: #334155 !important;
+}
+
+html.light .text-slate-300 {
+  color: #475569 !important;
+}
+
+html.light .text-slate-400 {
+  color: #64748b !important;
+}
+
+html.light .text-slate-500 {
+  color: #64748b !important;
+}
+
+html.light .text-slate-600 {
+  color: #475569 !important;
+}
+
+
+/* =========================================
+   LIGHT MODE - BORDERS
+========================================= */
+
+html.light .border-slate-800 {
+  border-color: #e2e8f0 !important;
+}
+
+html.light .border-slate-700 {
+  border-color: #cbd5e1 !important;
+}
+
+html.light .border-slate-200 {
+  border-color: #e2e8f0 !important;
+}
+
+
+/* =========================================
+   LIGHT MODE - HOVER
+========================================= */
+
+html.light .hover\:bg-slate-800:hover {
+  background-color: #f1f5f9 !important;
+}
+
+html.light .hover\:bg-slate-900:hover {
+  background-color: #f1f5f9 !important;
+}
+
+
+/* =========================================
+   DARK MODE
+========================================= */
+
+html.dark,
+html.dark body,
+body.dark-mode {
+  background-color: #07111f;
+  color: #ffffff;
+}
+
+
+/* =========================================
+   DARK MODE - AI INSIGHTS
+========================================= */
+
+html.dark .bg-\[\#0b1728\] {
+  background-color: #0b1728 !important;
+}
+
+html.dark .bg-\[\#101e31\] {
+  background-color: #101e31 !important;
+}
+
+html.dark .bg-\[\#17150d\] {
+  background-color: #17150d !important;
+}
+
+
+/* =========================================
+   DARK MODE - STANDARD BACKGROUNDS
+========================================= */
+
+html.dark .bg-slate-950 {
+  background-color: #020617 !important;
+}
+
+html.dark .bg-slate-900 {
+  background-color: #0f172a !important;
+}
+
+html.dark .bg-slate-800 {
+  background-color: #1e293b !important;
+}
+
+
+/* =========================================
+   DARK MODE - TEXT
+========================================= */
+
+html.dark .text-white {
+  color: #ffffff !important;
+}
+
+html.dark .text-slate-100 {
+  color: #f1f5f9 !important;
+}
+
+html.dark .text-slate-200 {
+  color: #e2e8f0 !important;
+}
+
+html.dark .text-slate-300 {
+  color: #cbd5e1 !important;
+}
+
+html.dark .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+html.dark .text-slate-500 {
+  color: #64748b !important;
+}
+
+html.dark .text-slate-600 {
+  color: #475569 !important;
+}
+
+
+/* =========================================
+   SCROLLBAR
+========================================= */
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #64748b;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+
+/* =========================================
+   SELECTION
+========================================= */
+
+::selection {
+  background: rgba(16, 185, 129, 0.25);
+}
+
+
+/* =========================================
+   FORM ELEMENTS
+========================================= */
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+
+/* =========================================
+   SMOOTH THEME TRANSITION
+========================================= */
+
+.theme-transition,
+.theme-transition * {
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
+}
+
+
+/* =========================================
+   DARK MODE FORM ELEMENTS
+========================================= */
+
+html.dark input,
+html.dark textarea,
+html.dark select {
+  color-scheme: dark;
+}
+
+
+/* =========================================
+   LIGHT MODE FORM ELEMENTS
+========================================= */
+
+html.light input,
+html.light textarea,
+html.light select {
+  color-scheme: light;
+}
