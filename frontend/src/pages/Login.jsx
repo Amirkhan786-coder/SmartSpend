@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+// =====================================
+// PRODUCTION BACKEND API
+// =====================================
+
 const API_URL =
   import.meta.env.VITE_API_URL ||
-  "http://localhost:5000/api";
+  "https://smartspend-backend-b8h9.onrender.com/api";
 
 function Login() {
   const navigate = useNavigate();
@@ -17,6 +21,10 @@ function Login() {
     password: "",
   });
 
+  // =====================================
+  // HANDLE INPUT
+  // =====================================
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -24,12 +32,20 @@ function Login() {
     });
   };
 
+  // =====================================
+  // HANDLE LOGIN
+  // =====================================
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
     setError("");
 
-    if (!formData.email || !formData.password) {
+    // =====================================
+    // VALIDATION
+    // =====================================
+
+    if (!formData.email.trim() || !formData.password) {
       setError("Please enter email and password.");
       return;
     }
@@ -37,19 +53,30 @@ function Login() {
     try {
       setLoading(true);
 
+      console.log(
+        "LOGIN API:",
+        `${API_URL}/auth/login`
+      );
+
       const response = await fetch(
         `${API_URL}/auth/login`,
         {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
           },
+
           body: JSON.stringify({
-            email: formData.email.trim(),
+            email: formData.email.trim().toLowerCase(),
             password: formData.password,
           }),
         }
       );
+
+      // =====================================
+      // SAFE RESPONSE PARSING
+      // =====================================
 
       let data = {};
 
@@ -59,13 +86,40 @@ function Login() {
         data = {};
       }
 
-      console.log("LOGIN STATUS:", response.status);
-      console.log("LOGIN RESPONSE:", data);
+      console.log(
+        "LOGIN STATUS:",
+        response.status
+      );
 
-      if (!response.ok || !data.success) {
+      console.log(
+        "LOGIN RESPONSE:",
+        data
+      );
+
+      // =====================================
+      // BACKEND ERROR
+      // =====================================
+
+      if (!response.ok) {
         setError(
-          data.message || "Invalid email or password."
+          data.message ||
+            data.error ||
+            `Login failed (${response.status}).`
         );
+
+        return;
+      }
+
+      // =====================================
+      // SUCCESS CHECK
+      // =====================================
+
+      if (!data.success) {
+        setError(
+          data.message ||
+            "Invalid email or password."
+        );
+
         return;
       }
 
@@ -76,16 +130,28 @@ function Login() {
       const user = data.user;
 
       if (!user) {
-        setError("User data was not received.");
+        setError(
+          "Login successful but user data was not received."
+        );
+
         return;
       }
 
+      // =====================================
+      // GET USER ID
+      // =====================================
+
       const userId = String(
-        user.id || user._id || ""
+        user.id ||
+          user._id ||
+          ""
       );
 
       if (!userId) {
-        console.error("USER ID MISSING:", user);
+        console.error(
+          "USER ID MISSING:",
+          user
+        );
 
         setError(
           "Login successful but User ID is missing."
@@ -94,16 +160,23 @@ function Login() {
         return;
       }
 
-      console.log("USER ID:", userId);
+      console.log(
+        "USER ID:",
+        userId
+      );
 
       // =====================================
-      // SAVE USER DATA
+      // SAVE USER ID
       // =====================================
 
       localStorage.setItem(
         "userId",
         userId
       );
+
+      // =====================================
+      // SAVE USER OBJECT
+      // =====================================
 
       localStorage.setItem(
         "smartSpendUser",
@@ -113,10 +186,18 @@ function Login() {
         })
       );
 
+      // =====================================
+      // SAVE USER NAME
+      // =====================================
+
       localStorage.setItem(
         "userName",
         user.name || ""
       );
+
+      // =====================================
+      // SAVE USER EMAIL
+      // =====================================
 
       localStorage.setItem(
         "userEmail",
@@ -124,12 +205,31 @@ function Login() {
       );
 
       // =====================================
-      // VERIFY
+      // BACKWARD COMPATIBILITY
+      // =====================================
+
+      localStorage.setItem(
+        "user_id",
+        userId
+      );
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          ...user,
+          id: userId,
+        })
+      );
+
+      // =====================================
+      // VERIFY LOCAL STORAGE
       // =====================================
 
       console.log(
         "SAVED userId:",
-        localStorage.getItem("userId")
+        localStorage.getItem(
+          "userId"
+        )
       );
 
       console.log(
@@ -139,8 +239,15 @@ function Login() {
         )
       );
 
+      console.log(
+        "SAVED userName:",
+        localStorage.getItem(
+          "userName"
+        )
+      );
+
       // =====================================
-      // DASHBOARD
+      // GO TO DASHBOARD
       // =====================================
 
       navigate("/dashboard");
@@ -152,8 +259,9 @@ function Login() {
       );
 
       setError(
-        "Backend connection failed. Please try again."
+        "Unable to connect to SmartSpend server. Please try again."
       );
+
     } finally {
       setLoading(false);
     }
@@ -164,7 +272,9 @@ function Login() {
 
       <div className="w-full max-w-md">
 
-        {/* LOGO */}
+        {/* =====================================
+            LOGO
+        ===================================== */}
 
         <div className="text-center mb-8">
 
@@ -188,9 +298,13 @@ function Login() {
 
         </div>
 
-        {/* LOGIN CARD */}
+        {/* =====================================
+            LOGIN CARD
+        ===================================== */}
 
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl">
+
+          {/* HEADING */}
 
           <h1 className="text-3xl font-bold text-white">
             Welcome Back
@@ -199,6 +313,10 @@ function Login() {
           <p className="text-slate-400 mt-2 mb-8">
             Sign in to continue to your SmartSpend account.
           </p>
+
+          {/* =====================================
+              LOGIN FORM
+          ===================================== */}
 
           <form onSubmit={handleLogin}>
 
@@ -217,7 +335,8 @@ function Login() {
                 onChange={handleChange}
                 placeholder="you@example.com"
                 autoComplete="email"
-                className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-500 outline-none focus:border-emerald-500 transition"
+                disabled={loading}
+                className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-500 outline-none focus:border-emerald-500 transition disabled:opacity-60"
               />
 
             </div>
@@ -243,7 +362,8 @@ function Login() {
                   onChange={handleChange}
                   placeholder="Enter your password"
                   autoComplete="current-password"
-                  className="w-full px-4 py-3 pr-12 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-500 outline-none focus:border-emerald-500 transition"
+                  disabled={loading}
+                  className="w-full px-4 py-3 pr-12 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-500 outline-none focus:border-emerald-500 transition disabled:opacity-60"
                 />
 
                 <button
@@ -253,7 +373,8 @@ function Login() {
                       (current) => !current
                     )
                   }
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition"
+                  disabled={loading}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition disabled:opacity-50"
                 >
                   {showPassword
                     ? "🙈"
@@ -264,7 +385,9 @@ function Login() {
 
             </div>
 
-            {/* ERROR */}
+            {/* =====================================
+                ERROR
+            ===================================== */}
 
             {error && (
               <div className="mb-5 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
@@ -272,7 +395,9 @@ function Login() {
               </div>
             )}
 
-            {/* SIGN IN */}
+            {/* =====================================
+                SIGN IN BUTTON
+            ===================================== */}
 
             <button
               type="submit"
@@ -286,7 +411,9 @@ function Login() {
 
           </form>
 
-          {/* SIGNUP */}
+          {/* =====================================
+              SIGNUP
+          ===================================== */}
 
           <p className="text-center text-sm text-slate-400 mt-7">
 
@@ -303,7 +430,9 @@ function Login() {
 
         </div>
 
-        {/* BACK */}
+        {/* =====================================
+            BACK
+        ===================================== */}
 
         <p className="text-center mt-6">
 
