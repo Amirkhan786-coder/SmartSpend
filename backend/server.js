@@ -9,7 +9,6 @@ const mongoose = require("mongoose");
 
 dotenv.config();
 
-
 // =========================
 // IMPORT ROUTES
 // =========================
@@ -20,13 +19,11 @@ const incomeRoutes = require("./routes/incomeRoutes");
 const budgetRoutes = require("./routes/budgetRoutes");
 const settingsRoutes = require("./routes/settingsRoutes");
 
-
 // =========================
 // CREATE APP
 // =========================
 
 const app = express();
-
 
 // =========================
 // MIDDLEWARE
@@ -34,13 +31,17 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "https://smart-spend-exfkt2vhp-md-amir-khan.vercel.app",
+      "https://smart-spend-q555i9ewl-md-amir-khan.vercel.app",
+    ],
     credentials: true,
   })
 );
 
 app.use(express.json());
-
 
 // =========================
 // BASIC TEST ROUTE
@@ -52,7 +53,6 @@ app.get("/", (req, res) => {
     message: "SmartSpend Backend is running 🚀",
   });
 });
-
 
 // =========================
 // API ROUTES
@@ -68,7 +68,6 @@ app.use("/api/budgets", budgetRoutes);
 
 app.use("/api/settings", settingsRoutes);
 
-
 // =========================
 // 404 HANDLER
 // =========================
@@ -77,9 +76,9 @@ app.use((req, res) => {
   res.status(404).json({
     success: false,
     message: "API route not found",
+    path: req.originalUrl,
   });
 });
-
 
 // =========================
 // ERROR HANDLER
@@ -94,7 +93,6 @@ app.use((error, req, res, next) => {
     error: error.message,
   });
 });
-
 
 // =========================
 // DATABASE + SERVER
