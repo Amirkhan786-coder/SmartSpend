@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://smartspend-backend-b8h9.onrender.com/api";
 
 // =====================================
 // GET LOGGED-IN USER ID
