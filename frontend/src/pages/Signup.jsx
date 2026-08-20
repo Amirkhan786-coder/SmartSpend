@@ -19,6 +19,13 @@ function Signup() {
   const [error, setError] = useState("");
 
   // =========================
+  // PRODUCTION BACKEND API
+  // =========================
+
+  const API_URL =
+    "https://smartspend-backend-b8h9.onrender.com/api";
+
+  // =========================
   // HANDLE INPUT
   // =========================
 
@@ -85,15 +92,20 @@ function Signup() {
       setLoading(true);
 
       const response = await fetch(
-        "http://localhost:5000/api/auth/signup",
+        `${API_URL}/auth/signup`,
         {
           method: "POST",
+
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
+
           body: JSON.stringify({
             name: name.trim(),
-            email: email.trim().toLowerCase(),
+            email: email
+              .trim()
+              .toLowerCase(),
             password,
           }),
         }
@@ -111,8 +123,15 @@ function Signup() {
         data = {};
       }
 
-      console.log("Signup Status:", response.status);
-      console.log("Signup Response:", data);
+      console.log(
+        "Signup Status:",
+        response.status
+      );
+
+      console.log(
+        "Signup Response:",
+        data
+      );
 
       // =========================
       // BACKEND ERROR
@@ -124,17 +143,13 @@ function Signup() {
             data.error ||
             "Failed to create account."
         );
+
         return;
       }
 
       // =========================
       // SUCCESS
       // =========================
-      //
-      // Backend agar success:true bheje
-      // ya sirf user/message bheje,
-      // dono cases mein signup successful maana jayega.
-      //
 
       setMessage(
         data.message ||
@@ -156,10 +171,13 @@ function Signup() {
         navigate("/login");
       }, 1200);
     } catch (error) {
-      console.error("Signup Error:", error);
+      console.error(
+        "Signup Error:",
+        error
+      );
 
       setError(
-        "Unable to connect to server. Make sure backend is running on port 5000."
+        "Unable to connect to server. Please try again."
       );
     } finally {
       setLoading(false);
@@ -278,7 +296,8 @@ function Signup() {
                   type="button"
                   onClick={() =>
                     setShowPassword(
-                      (current) => !current
+                      (current) =>
+                        !current
                     )
                   }
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"

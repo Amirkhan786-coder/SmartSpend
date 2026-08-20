@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "http://localhost:5000/api";
+
 function Login() {
   const navigate = useNavigate();
 
@@ -34,7 +38,7 @@ function Login() {
       setLoading(true);
 
       const response = await fetch(
-        "http://localhost:5000/api/auth/login",
+        `${API_URL}/auth/login`,
         {
           method: "POST",
           headers: {
@@ -47,8 +51,15 @@ function Login() {
         }
       );
 
-      const data = await response.json();
+      let data = {};
 
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
+      }
+
+      console.log("LOGIN STATUS:", response.status);
       console.log("LOGIN RESPONSE:", data);
 
       if (!response.ok || !data.success) {
@@ -129,7 +140,7 @@ function Login() {
       );
 
       // =====================================
-      // GO TO DASHBOARD
+      // DASHBOARD
       // =====================================
 
       navigate("/dashboard");
@@ -141,7 +152,7 @@ function Login() {
       );
 
       setError(
-        "Backend connection failed. Make sure server is running."
+        "Backend connection failed. Please try again."
       );
     } finally {
       setLoading(false);
@@ -177,12 +188,9 @@ function Login() {
 
         </div>
 
-
         {/* LOGIN CARD */}
 
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl">
-
-          {/* HEADING */}
 
           <h1 className="text-3xl font-bold text-white">
             Welcome Back
@@ -191,9 +199,6 @@ function Login() {
           <p className="text-slate-400 mt-2 mb-8">
             Sign in to continue to your SmartSpend account.
           </p>
-
-
-          {/* LOGIN FORM */}
 
           <form onSubmit={handleLogin}>
 
@@ -216,7 +221,6 @@ function Login() {
               />
 
             </div>
-
 
             {/* PASSWORD */}
 
@@ -246,7 +250,7 @@ function Login() {
                   type="button"
                   onClick={() =>
                     setShowPassword(
-                      !showPassword
+                      (current) => !current
                     )
                   }
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition"
@@ -260,7 +264,6 @@ function Login() {
 
             </div>
 
-
             {/* ERROR */}
 
             {error && (
@@ -268,7 +271,6 @@ function Login() {
                 {error}
               </div>
             )}
-
 
             {/* SIGN IN */}
 
@@ -283,7 +285,6 @@ function Login() {
             </button>
 
           </form>
-
 
           {/* SIGNUP */}
 
@@ -301,7 +302,6 @@ function Login() {
           </p>
 
         </div>
-
 
         {/* BACK */}
 
