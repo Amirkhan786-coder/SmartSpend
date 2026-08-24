@@ -5,6 +5,8 @@ import { useExpenses } from "../context/ExpenseContext";
 import { useIncome } from "../context/IncomeContext";
 import { getCurrentUser } from "../utils/auth";
 
+const API_URL = "https://smartspend-backend-b8h9.onrender.com/api";
+
 function Dashboard() {
   const { expenses, totalExpenses } = useExpenses();
 
@@ -47,7 +49,7 @@ function Dashboard() {
 
     window.addEventListener("storage", syncTheme);
 
-    const interval = setInterval(syncTheme, 200);
+    const interval = setInterval(syncTheme, 300);
 
     return () => {
       window.removeEventListener("storage", syncTheme);
@@ -63,7 +65,6 @@ function Dashboard() {
     const fetchUserSettings = async () => {
       const userId = localStorage.getItem("userId");
 
-      // If no user ID, use logged-in user's stored name
       if (!userId) {
         setUserName(currentUser?.name || "User");
         return;
@@ -71,9 +72,7 @@ function Dashboard() {
 
       try {
         const response = await fetch(
-          `http://localhost:5000/api/settings/${encodeURIComponent(
-            userId
-          )}`
+          `${API_URL}/settings/${encodeURIComponent(userId)}`
         );
 
         const data = await response.json();
@@ -89,9 +88,7 @@ function Dashboard() {
               "User"
           );
         } else {
-          setUserName(
-            currentUser?.name || "User"
-          );
+          setUserName(currentUser?.name || "User");
         }
       } catch (error) {
         console.error(
@@ -99,9 +96,7 @@ function Dashboard() {
           error
         );
 
-        setUserName(
-          currentUser?.name || "User"
-        );
+        setUserName(currentUser?.name || "User");
       }
     };
 
@@ -192,24 +187,6 @@ function Dashboard() {
       month: "short",
       year: "numeric",
     });
-  };
-
-  const getCategoryIcon = (category) => {
-    const value = String(
-      category || ""
-    ).toLowerCase();
-
-    if (value.includes("food")) return "🍔";
-    if (value.includes("education")) return "📚";
-    if (value.includes("shopping")) return "🛒";
-    if (value.includes("transport")) return "🚌";
-    if (value.includes("travel")) return "🚌";
-    if (value.includes("health")) return "💊";
-    if (value.includes("bill")) return "💡";
-    if (value.includes("entertainment"))
-      return "🎬";
-
-    return "📦";
   };
 
   // =====================================================
@@ -311,10 +288,6 @@ function Dashboard() {
     ? "text-slate-500"
     : "text-slate-500";
 
-  const subtleBg = darkMode
-    ? "bg-slate-800"
-    : "bg-slate-100";
-
   const progressBg = darkMode
     ? "bg-slate-800"
     : "bg-slate-200";
@@ -342,36 +315,36 @@ function Dashboard() {
       <div className="p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
 
-          {/* HEADER */}
+          {/* =================================================
+              HEADER
+          ================================================= */}
 
-          <section className="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-8">
+          <section className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8">
+
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-500">
-                  Financial Overview
-                </p>
-              </div>
+              <p className="text-sm font-medium text-emerald-500 mb-2">
+                Financial Overview
+              </p>
 
               <h1
                 className={`text-3xl sm:text-4xl font-bold tracking-tight ${cardText}`}
               >
-                Good evening{" "}
+                Welcome back,{" "}
                 <span className="text-emerald-500">
                   {userName}
-                </span>{" "}
-                👋
+                </span>
               </h1>
 
               <p
-                className={`mt-2 ${secondaryText}`}
+                className={`mt-2 text-sm sm:text-base ${secondaryText}`}
               >
-                Here's what's happening with your money today.
+                Keep track of your income, expenses and
+                overall financial position.
               </p>
             </div>
 
             <div className="flex flex-wrap gap-3">
+
               <button
                 type="button"
                 onClick={() =>
@@ -383,9 +356,9 @@ function Dashboard() {
                     : "border-slate-200 bg-white text-slate-900 hover:border-emerald-500/50 hover:bg-slate-50"
                 }`}
               >
-                <span className="text-emerald-500">
+                <span className="text-emerald-500 mr-1">
                   +
-                </span>{" "}
+                </span>
                 Add Income
               </button>
 
@@ -393,173 +366,173 @@ function Dashboard() {
                 to="/expenses"
                 className="px-4 py-3 rounded-xl bg-emerald-500 text-slate-950 hover:bg-emerald-400 transition font-semibold"
               >
-                + Add Expense
+                Add Expense
               </Link>
+
             </div>
           </section>
 
-          {/* SUMMARY CARDS */}
+          {/* =================================================
+              SUMMARY
+          ================================================= */}
 
           <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
 
             {/* BALANCE */}
 
             <div
-              className={`relative overflow-hidden rounded-2xl border p-6 transition-colors duration-300 ${
+              className={`rounded-2xl border p-6 ${
                 darkMode
-                  ? "border-emerald-500/20 bg-gradient-to-br from-emerald-500/15 via-slate-900 to-slate-900"
-                  : "border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-white"
+                  ? "border-emerald-500/20 bg-slate-900"
+                  : "border-emerald-200 bg-white"
               }`}
             >
-              <div className="absolute -right-10 -top-10 w-32 h-32 rounded-full bg-emerald-500/10 blur-2xl" />
+              <div className="flex items-start justify-between">
 
-              <div className="relative">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                      💰
-                    </div>
+                <div>
+                  <p
+                    className={`text-sm ${secondaryText}`}
+                  >
+                    Available Balance
+                  </p>
 
-                    <p
-                      className={`text-sm ${secondaryText}`}
-                    >
-                      Available Balance
-                    </p>
-                  </div>
+                  <h2
+                    className={`text-3xl font-bold mt-4 ${cardText}`}
+                  >
+                    {formatCurrency(balance)}
+                  </h2>
+                </div>
 
-                  <span className="text-xs font-semibold text-emerald-500">
+                <span className="text-sm font-semibold text-emerald-500">
+                  {Math.round(
+                    remainingPercentage
+                  )}
+                  %
+                </span>
+
+              </div>
+
+              <div className="mt-6">
+
+                <div className="flex justify-between text-xs mb-2">
+
+                  <span className={mutedText}>
+                    Income remaining
+                  </span>
+
+                  <span className={secondaryText}>
                     {Math.round(
                       remainingPercentage
                     )}
                     %
                   </span>
+
                 </div>
 
-                <h2
-                  className={`text-3xl font-bold mt-5 ${cardText}`}
+                <div
+                  className={`h-2 rounded-full overflow-hidden ${progressBg}`}
                 >
-                  {formatCurrency(balance)}
-                </h2>
-
-                <div className="mt-5">
-                  <div className="flex justify-between text-xs mb-2">
-                    <span className={mutedText}>
-                      Income remaining
-                    </span>
-
-                    <span className={secondaryText}>
-                      {Math.round(
-                        remainingPercentage
-                      )}
-                      %
-                    </span>
-                  </div>
-
                   <div
-                    className={`h-2 rounded-full overflow-hidden ${progressBg}`}
-                  >
-                    <div
-                      className="h-full bg-emerald-500 rounded-full transition-all duration-700"
-                      style={{
-                        width: `${remainingPercentage}%`,
-                      }}
-                    />
-                  </div>
+                    className="h-full bg-emerald-500 rounded-full transition-all duration-700"
+                    style={{
+                      width: `${remainingPercentage}%`,
+                    }}
+                  />
                 </div>
+
               </div>
             </div>
 
             {/* INCOME */}
 
             <div
-              className={`rounded-2xl border p-6 hover:border-emerald-500/20 transition ${cardBg}`}
+              className={`rounded-2xl border p-6 ${cardBg}`}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                    📈
-                  </div>
+              <div className="flex items-start justify-between">
 
+                <div>
                   <p
                     className={`text-sm ${secondaryText}`}
                   >
                     Total Income
                   </p>
+
+                  <h2
+                    className={`text-3xl font-bold mt-4 ${cardText}`}
+                  >
+                    {formatCurrency(totalIncome)}
+                  </h2>
                 </div>
 
                 <span
-                  className={`text-xs px-2 py-1 rounded-lg ${
+                  className={`text-xs px-2 py-1 rounded-md ${
                     darkMode
-                      ? "bg-slate-800 text-slate-500"
+                      ? "bg-slate-800 text-slate-400"
                       : "bg-slate-100 text-slate-500"
                   }`}
                 >
-                  This month
+                  Total
                 </span>
-              </div>
 
-              <h2
-                className={`text-3xl font-bold mt-5 ${cardText}`}
-              >
-                {formatCurrency(totalIncome)}
-              </h2>
+              </div>
 
               <button
                 type="button"
                 onClick={() =>
                   setShowIncomeList(true)
                 }
-                className="text-sm text-emerald-500 hover:text-emerald-400 mt-4 transition"
+                className="text-sm text-emerald-500 hover:text-emerald-400 mt-5 transition"
               >
-                View income →
+                View income
               </button>
             </div>
 
             {/* EXPENSE */}
 
             <div
-              className={`rounded-2xl border p-6 hover:border-red-500/20 transition ${cardBg}`}
+              className={`rounded-2xl border p-6 ${cardBg}`}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
-                    💸
-                  </div>
+              <div className="flex items-start justify-between">
 
+                <div>
                   <p
                     className={`text-sm ${secondaryText}`}
                   >
                     Total Expenses
                   </p>
+
+                  <h2
+                    className={`text-3xl font-bold mt-4 ${cardText}`}
+                  >
+                    {formatCurrency(totalExpenses)}
+                  </h2>
                 </div>
 
                 <span
-                  className={`text-xs px-2 py-1 rounded-lg ${
+                  className={`text-xs px-2 py-1 rounded-md ${
                     darkMode
-                      ? "bg-slate-800 text-slate-500"
+                      ? "bg-slate-800 text-slate-400"
                       : "bg-slate-100 text-slate-500"
                   }`}
                 >
-                  This month
+                  Total
                 </span>
-              </div>
 
-              <h2
-                className={`text-3xl font-bold mt-5 ${cardText}`}
-              >
-                {formatCurrency(totalExpenses)}
-              </h2>
+              </div>
 
               <Link
                 to="/expenses"
-                className="inline-block text-sm text-red-500 hover:text-red-400 mt-4 transition"
+                className="inline-block text-sm text-red-500 hover:text-red-400 mt-5 transition"
               >
-                Manage expenses →
+                Manage expenses
               </Link>
             </div>
+
           </section>
 
-          {/* SPENDING + AI INSIGHT */}
+          {/* =================================================
+              SPENDING OVERVIEW + INSIGHT
+          ================================================= */}
 
           <section className="grid grid-cols-1 xl:grid-cols-5 gap-6 mb-6">
 
@@ -568,53 +541,60 @@ function Dashboard() {
             <div
               className={`xl:col-span-3 rounded-2xl border overflow-hidden ${cardBg}`}
             >
+
               <div
                 className={`p-6 border-b flex items-center justify-between ${divider}`}
               >
                 <div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-9 h-9 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                      📊
-                    </div>
 
-                    <h2
-                      className={`font-semibold ${cardText}`}
-                    >
-                      Spending Overview
-                    </h2>
-                  </div>
+                  <h2
+                    className={`font-semibold ${cardText}`}
+                  >
+                    Spending Overview
+                  </h2>
 
                   <p
                     className={`text-xs mt-2 ${mutedText}`}
                   >
-                    Categories · Where your money is going
+                    Breakdown of your expenses by category
                   </p>
+
                 </div>
 
                 <Link
                   to="/analytics"
                   className="text-sm text-emerald-500 hover:text-emerald-400"
                 >
-                  Analytics →
+                  Analytics
                 </Link>
+
               </div>
 
               <div className="p-6">
+
                 {categoryData.length === 0 ? (
-                  <div className="py-10 text-center">
-                    <div className="text-4xl mb-3">
-                      📊
+                  <div className="py-12 text-center">
+
+                    <div className="w-12 h-12 mx-auto rounded-xl border border-dashed border-slate-500/30 flex items-center justify-center">
+                      <span className="text-slate-400">
+                        —
+                      </span>
                     </div>
 
-                    <p className={mutedText}>
-                      No spending data yet.
+                    <p
+                      className={`mt-4 text-sm ${mutedText}`}
+                    >
+                      No spending data available yet.
                     </p>
+
                   </div>
                 ) : (
-                  <div className="space-y-7">
+                  <div className="space-y-6">
+
                     {categoryData
                       .slice(0, 5)
                       .map((item) => {
+
                         const percentage =
                           totalExpenses > 0
                             ? (item.amount /
@@ -622,39 +602,28 @@ function Dashboard() {
                               100
                             : 0;
 
-                        const icon =
-                          getCategoryIcon(
-                            item.category
-                          );
-
                         return (
                           <div
                             key={item.category}
                           >
-                            <div className="flex items-center justify-between mb-3">
-                              <div className="flex items-center gap-3">
-                                <div
-                                  className={`w-9 h-9 rounded-lg flex items-center justify-center ${subtleBg}`}
+
+                            <div className="flex items-center justify-between mb-2">
+
+                              <div>
+                                <p
+                                  className={`text-sm font-medium ${cardText}`}
                                 >
-                                  {icon}
-                                </div>
+                                  {item.category}
+                                </p>
 
-                                <div>
-                                  <p
-                                    className={`text-sm font-medium ${cardText}`}
-                                  >
-                                    {item.category}
-                                  </p>
-
-                                  <p
-                                    className={`text-xs ${mutedText}`}
-                                  >
-                                    {percentage.toFixed(
-                                      1
-                                    )}
-                                    % of total
-                                  </p>
-                                </div>
+                                <p
+                                  className={`text-xs mt-1 ${mutedText}`}
+                                >
+                                  {percentage.toFixed(
+                                    1
+                                  )}
+                                  % of total
+                                </p>
                               </div>
 
                               <p
@@ -664,201 +633,219 @@ function Dashboard() {
                                   item.amount
                                 )}
                               </p>
+
                             </div>
 
                             <div
-                              className={`h-2.5 rounded-full overflow-hidden ${progressBg}`}
+                              className={`h-2 rounded-full overflow-hidden ${progressBg}`}
                             >
                               <div
-                                className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-700"
+                                className="h-full rounded-full bg-emerald-500 transition-all duration-700"
                                 style={{
                                   width: `${percentage}%`,
                                 }}
                               />
                             </div>
+
                           </div>
                         );
                       })}
+
                   </div>
                 )}
+
               </div>
             </div>
 
-            {/* AI INSIGHT */}
+            {/* FINANCIAL INSIGHT */}
 
             <div
-              className={`xl:col-span-2 relative overflow-hidden rounded-2xl border transition-colors duration-300 ${
-                darkMode
-                  ? "border-purple-500/20 bg-gradient-to-br from-purple-500/10 via-slate-900 to-slate-900"
-                  : "border-purple-200 bg-gradient-to-br from-purple-50 via-white to-white"
-              }`}
+              className={`xl:col-span-2 rounded-2xl border ${cardBg}`}
             >
-              <div className="absolute -right-16 -top-16 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl" />
 
-              <div className="relative p-6">
+              <div className="p-6">
+
                 <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-xl bg-purple-500/10 flex items-center justify-center text-xl">
-                      🤖
-                    </div>
 
-                    <div>
-                      <p
-                        className={`font-semibold ${cardText}`}
-                      >
-                        AI Insight
-                      </p>
+                  <div>
+                    <p
+                      className={`text-xs uppercase tracking-wider text-emerald-500 font-semibold`}
+                    >
+                      Financial Insight
+                    </p>
 
-                      <p
-                        className={`text-xs ${mutedText}`}
-                      >
-                        Personalized analysis
-                      </p>
-                    </div>
+                    <h2
+                      className={`font-semibold mt-1 ${cardText}`}
+                    >
+                      Spending Summary
+                    </h2>
                   </div>
 
-                  <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-[10px] font-bold uppercase tracking-wider">
-                    Smart
+                  <span
+                    className={`text-xs px-2 py-1 rounded-md ${
+                      darkMode
+                        ? "bg-slate-800 text-slate-400"
+                        : "bg-slate-100 text-slate-500"
+                    }`}
+                  >
+                    Overview
                   </span>
+
                 </div>
 
                 {highestCategory ? (
                   <>
+
                     <div
-                      className={`p-4 rounded-xl border transition ${
+                      className={`rounded-xl border p-5 ${
                         darkMode
-                          ? "bg-slate-950/70 border-slate-800"
-                          : "bg-white border-purple-100"
+                          ? "bg-slate-950 border-slate-800"
+                          : "bg-slate-50 border-slate-200"
                       }`}
                     >
+
                       <p
                         className={`text-xs uppercase tracking-wider ${mutedText}`}
                       >
-                        🎯 Highest spending
+                        Highest spending category
                       </p>
 
-                      <div className="flex items-center justify-between mt-3">
-                        <div className="flex items-center gap-3">
-                          <span className="text-2xl">
-                            {getCategoryIcon(
-                              highestCategory.category
-                            )}
-                          </span>
+                      <div className="flex items-end justify-between gap-4 mt-4">
 
-                          <div>
-                            <p
-                              className={`font-semibold ${cardText}`}
-                            >
-                              {
-                                highestCategory.category
-                              }
-                            </p>
+                        <div>
 
-                            <p
-                              className={`text-xs ${mutedText}`}
-                            >
-                              Most spent category
-                            </p>
-                          </div>
+                          <p
+                            className={`text-lg font-semibold ${cardText}`}
+                          >
+                            {highestCategory.category}
+                          </p>
+
+                          <p
+                            className={`text-sm mt-1 ${mutedText}`}
+                          >
+                            Largest share of your expenses
+                          </p>
+
                         </div>
 
-                        <p className="font-bold text-emerald-500">
+                        <p className="text-lg font-bold text-emerald-500">
                           {formatCurrency(
                             highestCategory.amount
                           )}
                         </p>
+
                       </div>
+
                     </div>
 
-                    <div className="mt-5">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span>💡</span>
-
-                        <p
-                          className={`text-xs font-semibold uppercase tracking-wider ${secondaryText}`}
-                        >
-                          Recommendation
-                        </p>
-                      </div>
+                    <div className="mt-6">
 
                       <p
-                        className={`text-sm leading-relaxed ${secondaryText}`}
+                        className={`text-xs uppercase tracking-wider font-semibold ${secondaryText}`}
                       >
-                        Consider setting a budget for this category and reviewing these transactions regularly.
+                        Recommendation
                       </p>
+
+                      <p
+                        className={`text-sm leading-6 mt-2 ${secondaryText}`}
+                      >
+                        Review your spending in{" "}
+                        <span
+                          className={`font-medium ${cardText}`}
+                        >
+                          {highestCategory.category}
+                        </span>{" "}
+                        and consider setting a budget for
+                        this category.
+                      </p>
+
                     </div>
 
                     <Link
                       to="/ai-insights"
-                      className="inline-flex items-center mt-5 text-sm text-emerald-500 hover:text-emerald-400"
+                      className="inline-flex mt-5 text-sm text-emerald-500 hover:text-emerald-400"
                     >
-                      Get detailed insights →
+                      View detailed insights
                     </Link>
+
                   </>
                 ) : (
-                  <div className="py-8 text-center">
-                    <div className="text-4xl mb-3">
-                      🤖
+                  <div className="py-10 text-center">
+
+                    <div className="w-12 h-12 mx-auto rounded-xl border border-dashed border-slate-500/30 flex items-center justify-center">
+                      <span className="text-slate-400">
+                        —
+                      </span>
                     </div>
 
                     <p
-                      className={`text-sm ${mutedText}`}
+                      className={`text-sm mt-4 ${mutedText}`}
                     >
-                      Add expenses to receive personalized insights.
+                      Add expenses to see spending insights.
                     </p>
+
                   </div>
                 )}
+
               </div>
+
             </div>
+
           </section>
 
-          {/* RECENT TRANSACTIONS */}
+          {/* =================================================
+              RECENT TRANSACTIONS
+          ================================================= */}
 
           <section
             className={`rounded-2xl border overflow-hidden mb-6 ${cardBg}`}
           >
+
             <div
               className={`p-6 border-b flex items-center justify-between ${divider}`}
             >
-              <div className="flex items-center gap-3">
-                <div
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center ${subtleBg}`}
+
+              <div>
+
+                <h2
+                  className={`font-semibold ${cardText}`}
                 >
-                  🧾
-                </div>
+                  Recent Transactions
+                </h2>
 
-                <div>
-                  <h2
-                    className={`font-semibold ${cardText}`}
-                  >
-                    Recent Transactions
-                  </h2>
+                <p
+                  className={`text-xs mt-1 ${mutedText}`}
+                >
+                  Your latest expense activity
+                </p>
 
-                  <p
-                    className={`text-xs mt-1 ${mutedText}`}
-                  >
-                    Latest spending activity
-                  </p>
-                </div>
               </div>
 
               <Link
                 to="/expenses"
                 className="text-sm text-emerald-500 hover:text-emerald-400"
               >
-                View All →
+                View all
               </Link>
+
             </div>
 
             {recentExpenses.length === 0 ? (
               <div className="p-12 text-center">
-                <div className="text-4xl mb-3">
-                  🧾
-                </div>
 
-                <p className={mutedText}>
-                  No transactions yet.
+                <p
+                  className={`text-sm ${mutedText}`}
+                >
+                  No transactions recorded yet.
                 </p>
+
+                <Link
+                  to="/expenses"
+                  className="inline-block mt-4 text-sm text-emerald-500 hover:text-emerald-400"
+                >
+                  Add your first expense
+                </Link>
+
               </div>
             ) : (
               <div
@@ -868,96 +855,92 @@ function Dashboard() {
                     : "divide-slate-200"
                 }`}
               >
-                {recentExpenses.map((expense) => {
-                  const icon =
-                    expense.icon ||
-                    getCategoryIcon(
-                      expense.category
-                    );
 
-                  return (
-                    <div
-                      key={
-                        expense._id ||
-                        expense.id
-                      }
-                      className={`px-6 py-4 flex items-center justify-between transition ${
-                        darkMode
-                          ? "hover:bg-slate-800/30"
-                          : "hover:bg-slate-50"
-                      }`}
-                    >
-                      <div className="flex items-center gap-4 min-w-0">
-                        <div
-                          className={`w-11 h-11 shrink-0 rounded-xl border flex items-center justify-center text-lg ${
+                {recentExpenses.map((expense) => (
+                  <div
+                    key={
+                      expense._id ||
+                      expense.id
+                    }
+                    className={`px-6 py-4 flex items-center justify-between gap-4 transition ${
+                      darkMode
+                        ? "hover:bg-slate-800/30"
+                        : "hover:bg-slate-50"
+                    }`}
+                  >
+
+                    <div className="min-w-0">
+
+                      <p
+                        className={`font-medium truncate ${cardText}`}
+                      >
+                        {expense.title}
+                      </p>
+
+                      <div className="flex flex-wrap items-center gap-2 mt-1">
+
+                        <span
+                          className={`text-xs ${mutedText}`}
+                        >
+                          {expense.category ||
+                            "Other"}
+                        </span>
+
+                        <span
+                          className={
                             darkMode
-                              ? "bg-slate-950 border-slate-800"
-                              : "bg-slate-100 border-slate-200"
-                          }`}
+                              ? "text-slate-700"
+                              : "text-slate-300"
+                          }
                         >
-                          {icon}
-                        </div>
+                          /
+                        </span>
 
-                        <div className="min-w-0">
-                          <p
-                            className={`font-medium truncate ${cardText}`}
-                          >
-                            {expense.title}
-                          </p>
-
-                          <div className="flex items-center gap-2 mt-1">
-                            <span
-                              className={`text-xs ${mutedText}`}
-                            >
-                              {expense.category}
-                            </span>
-
-                            <span
-                              className={
-                                darkMode
-                                  ? "text-slate-700"
-                                  : "text-slate-300"
-                              }
-                            >
-                              •
-                            </span>
-
-                            <span
-                              className={`text-xs ${mutedText}`}
-                            >
-                              {formatDate(
-                                expense.date
-                              )}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="text-right ml-4">
-                        <p className="font-semibold text-red-500">
-                          -
-                          {formatCurrency(
-                            expense.amount
+                        <span
+                          className={`text-xs ${mutedText}`}
+                        >
+                          {formatDate(
+                            expense.date
                           )}
-                        </p>
+                        </span>
 
-                        <p
-                          className={`text-[10px] uppercase tracking-wider mt-1 ${mutedText}`}
-                        >
-                          Expense
-                        </p>
                       </div>
+
                     </div>
-                  );
-                })}
+
+                    <div className="text-right shrink-0">
+
+                      <p className="font-semibold text-red-500">
+                        -
+                        {formatCurrency(
+                          expense.amount
+                        )}
+                      </p>
+
+                      <p
+                        className={`text-[10px] uppercase tracking-wider mt-1 ${mutedText}`}
+                      >
+                        Expense
+                      </p>
+
+                    </div>
+
+                  </div>
+                ))}
+
               </div>
             )}
+
           </section>
 
-          {/* QUICK ACTIONS */}
+          {/* =================================================
+              QUICK ACTIONS
+          ================================================= */}
 
           <section>
+
             <div className="mb-4">
+
               <h2
                 className={`text-lg font-semibold ${cardText}`}
               >
@@ -967,8 +950,9 @@ function Dashboard() {
               <p
                 className={`text-sm mt-1 ${mutedText}`}
               >
-                Manage your finances faster
+                Common finance management tasks
               </p>
+
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -980,20 +964,25 @@ function Dashboard() {
                 onClick={() =>
                   setShowIncomeModal(true)
                 }
-                className={`group text-left rounded-2xl border p-5 transition ${
+                className={`text-left rounded-2xl border p-5 transition ${
                   darkMode
-                    ? "border-slate-800 bg-slate-900 hover:border-emerald-500/30 hover:bg-emerald-500/5"
-                    : "border-slate-200 bg-white hover:border-emerald-500/30 hover:bg-emerald-50"
+                    ? "border-slate-800 bg-slate-900 hover:border-emerald-500/40"
+                    : "border-slate-200 bg-white hover:border-emerald-500/40"
                 }`}
               >
-                <div className="flex items-start justify-between">
-                  <div className="w-11 h-11 rounded-xl bg-emerald-500/10 flex items-center justify-center text-xl">
-                    💵
-                  </div>
 
-                  <span className="text-slate-400 group-hover:text-emerald-500 transition">
-                    →
+                <div className="flex items-center justify-between">
+
+                  <span className="text-sm font-semibold text-emerald-500">
+                    Income
                   </span>
+
+                  <span
+                    className={`text-sm ${mutedText}`}
+                  >
+                    +
+                  </span>
+
                 </div>
 
                 <h3
@@ -1005,32 +994,34 @@ function Dashboard() {
                 <p
                   className={`text-sm mt-1 ${mutedText}`}
                 >
-                  Record salary or other income.
+                  Record salary or another source of income.
                 </p>
 
-                <p className="text-sm text-emerald-500 mt-4">
-                  Add now →
-                </p>
               </button>
 
               {/* EXPENSES */}
 
               <Link
                 to="/expenses"
-                className={`group rounded-2xl border p-5 transition ${
+                className={`rounded-2xl border p-5 transition ${
                   darkMode
-                    ? "border-slate-800 bg-slate-900 hover:border-red-500/30 hover:bg-red-500/5"
-                    : "border-slate-200 bg-white hover:border-red-500/30 hover:bg-red-50"
+                    ? "border-slate-800 bg-slate-900 hover:border-red-500/40"
+                    : "border-slate-200 bg-white hover:border-red-500/40"
                 }`}
               >
-                <div className="flex items-start justify-between">
-                  <div className="w-11 h-11 rounded-xl bg-red-500/10 flex items-center justify-center text-xl">
-                    💳
-                  </div>
 
-                  <span className="text-slate-400 group-hover:text-red-500 transition">
+                <div className="flex items-center justify-between">
+
+                  <span className="text-sm font-semibold text-red-500">
+                    Expenses
+                  </span>
+
+                  <span
+                    className={`text-sm ${mutedText}`}
+                  >
                     →
                   </span>
+
                 </div>
 
                 <h3
@@ -1042,32 +1033,34 @@ function Dashboard() {
                 <p
                   className={`text-sm mt-1 ${mutedText}`}
                 >
-                  Add and manage transactions.
+                  Add, review and manage your transactions.
                 </p>
 
-                <p className="text-sm text-red-500 mt-4">
-                  Open expenses →
-                </p>
               </Link>
 
               {/* ANALYTICS */}
 
               <Link
                 to="/analytics"
-                className={`group rounded-2xl border p-5 transition ${
+                className={`rounded-2xl border p-5 transition ${
                   darkMode
-                    ? "border-slate-800 bg-slate-900 hover:border-blue-500/30 hover:bg-blue-500/5"
-                    : "border-slate-200 bg-white hover:border-blue-500/30 hover:bg-blue-50"
+                    ? "border-slate-800 bg-slate-900 hover:border-blue-500/40"
+                    : "border-slate-200 bg-white hover:border-blue-500/40"
                 }`}
               >
-                <div className="flex items-start justify-between">
-                  <div className="w-11 h-11 rounded-xl bg-blue-500/10 flex items-center justify-center text-xl">
-                    📊
-                  </div>
 
-                  <span className="text-slate-400 group-hover:text-blue-500 transition">
+                <div className="flex items-center justify-between">
+
+                  <span className="text-sm font-semibold text-blue-500">
+                    Analytics
+                  </span>
+
+                  <span
+                    className={`text-sm ${mutedText}`}
+                  >
                     →
                   </span>
+
                 </div>
 
                 <h3
@@ -1079,29 +1072,35 @@ function Dashboard() {
                 <p
                   className={`text-sm mt-1 ${mutedText}`}
                 >
-                  Understand your spending.
+                  Review spending patterns and trends.
                 </p>
 
-                <p className="text-sm text-blue-500 mt-4">
-                  Explore analytics →
-                </p>
               </Link>
+
             </div>
+
           </section>
+
         </div>
       </div>
 
-      {/* ADD INCOME MODAL */}
+      {/* =====================================================
+          ADD INCOME MODAL
+      ===================================================== */}
 
       {showIncomeModal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+
           <div
             className={`w-full max-w-md rounded-2xl border shadow-2xl ${cardBg}`}
           >
+
             <div
               className={`p-6 border-b flex items-center justify-between ${divider}`}
             >
+
               <div>
+
                 <h2
                   className={`text-xl font-bold ${cardText}`}
                 >
@@ -1113,6 +1112,7 @@ function Dashboard() {
                 >
                   Record a new income source.
                 </p>
+
               </div>
 
               <button
@@ -1126,15 +1126,18 @@ function Dashboard() {
                     : "text-slate-500 hover:bg-slate-100"
                 }`}
               >
-                ✕
+                ×
               </button>
+
             </div>
 
             <form
               onSubmit={handleAddIncome}
               className="p-6"
             >
+
               <div className="mb-4">
+
                 <label
                   className={`block text-sm mb-2 ${secondaryText}`}
                 >
@@ -1149,9 +1152,11 @@ function Dashboard() {
                   placeholder="e.g. Freelance Payment"
                   className={`w-full px-4 py-3 rounded-xl border outline-none transition ${inputBg} ${inputBorder} ${cardText}`}
                 />
+
               </div>
 
               <div className="mb-4">
+
                 <label
                   className={`block text-sm mb-2 ${secondaryText}`}
                 >
@@ -1167,9 +1172,11 @@ function Dashboard() {
                   placeholder="Enter amount"
                   className={`w-full px-4 py-3 rounded-xl border outline-none transition ${inputBg} ${inputBorder} ${cardText}`}
                 />
+
               </div>
 
               <div className="mb-4">
+
                 <label
                   className={`block text-sm mb-2 ${secondaryText}`}
                 >
@@ -1189,9 +1196,11 @@ function Dashboard() {
                   <option>Gift</option>
                   <option>Other</option>
                 </select>
+
               </div>
 
               <div className="mb-6">
+
                 <label
                   className={`block text-sm mb-2 ${secondaryText}`}
                 >
@@ -1205,9 +1214,11 @@ function Dashboard() {
                   type="date"
                   className={`w-full px-4 py-3 rounded-xl border outline-none transition ${inputBg} ${inputBorder} ${cardText}`}
                 />
+
               </div>
 
               <div className="flex gap-3">
+
                 <button
                   type="button"
                   onClick={() =>
@@ -1228,23 +1239,33 @@ function Dashboard() {
                 >
                   Add Income
                 </button>
+
               </div>
+
             </form>
+
           </div>
+
         </div>
       )}
 
-      {/* INCOME HISTORY MODAL */}
+      {/* =====================================================
+          INCOME HISTORY MODAL
+      ===================================================== */}
 
       {showIncomeList && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+
           <div
             className={`w-full max-w-lg rounded-2xl border shadow-2xl ${cardBg}`}
           >
+
             <div
               className={`p-6 border-b flex items-center justify-between ${divider}`}
             >
+
               <div>
+
                 <h2
                   className={`text-xl font-bold ${cardText}`}
                 >
@@ -1254,9 +1275,9 @@ function Dashboard() {
                 <p
                   className={`text-sm mt-1 ${mutedText}`}
                 >
-                  Total:{" "}
-                  {formatCurrency(totalIncome)}
+                  Total: {formatCurrency(totalIncome)}
                 </p>
+
               </div>
 
               <button
@@ -1270,12 +1291,15 @@ function Dashboard() {
                     : "text-slate-500 hover:bg-slate-100"
                 }`}
               >
-                ✕
+                ×
               </button>
+
             </div>
 
             <div className="p-6">
+
               <div className="max-h-96 overflow-y-auto space-y-3">
+
                 {income.length === 0 ? (
                   <p
                     className={`text-center py-8 ${mutedText}`}
@@ -1292,7 +1316,9 @@ function Dashboard() {
                           : "bg-slate-50 border-slate-200"
                       }`}
                     >
+
                       <div>
+
                         <p
                           className={`font-medium ${cardText}`}
                         >
@@ -1303,14 +1329,16 @@ function Dashboard() {
                           className={`text-xs mt-1 ${mutedText}`}
                         >
                           {item.source}
-                          {" • "}
+                          {" / "}
                           {formatDate(
                             item.date
                           )}
                         </p>
+
                       </div>
 
                       <div className="flex items-center gap-3">
+
                         <span className="font-semibold text-emerald-500">
                           +
                           {formatCurrency(
@@ -1325,15 +1353,18 @@ function Dashboard() {
                               item._id
                             )
                           }
-                          className="p-2 rounded-lg text-red-500 hover:bg-red-500/10 transition"
+                          className="px-2 py-1 rounded-lg text-xs text-red-500 hover:bg-red-500/10 transition"
                           title="Delete income"
                         >
-                          🗑️
+                          Delete
                         </button>
+
                       </div>
+
                     </div>
                   ))
                 )}
+
               </div>
 
               <button
@@ -1344,12 +1375,16 @@ function Dashboard() {
                 }}
                 className="w-full mt-5 py-3 rounded-xl bg-emerald-500 text-slate-950 font-semibold hover:bg-emerald-400 transition"
               >
-                + Add Another Income
+                Add Another Income
               </button>
+
             </div>
+
           </div>
+
         </div>
       )}
+
     </main>
   );
 }
