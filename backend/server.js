@@ -34,8 +34,11 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://localhost:5174",
+
+      // Vercel Production URLs
       "https://smart-spend-exfkt2vhp-md-amir-khan.vercel.app",
       "https://smart-spend-q555i9ewl-md-amir-khan.vercel.app",
+      "https://smart-spend-phvxy619b-md-amir-khan.vercel.app",
     ],
     credentials: true,
   })
