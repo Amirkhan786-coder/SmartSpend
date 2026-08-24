@@ -6,7 +6,6 @@ import { Link, useNavigate } from "react-router-dom";
 // =====================================
 
 const API_URL =
-  import.meta.env.VITE_API_URL ||
   "https://smartspend-backend-b8h9.onrender.com/api";
 
 function Login() {
@@ -26,10 +25,12 @@ function Login() {
   // =====================================
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setFormData((current) => ({
+      ...current,
+      [name]: value,
+    }));
   };
 
   // =====================================
@@ -53,26 +54,22 @@ function Login() {
     try {
       setLoading(true);
 
-      console.log(
-        "LOGIN API:",
-        `${API_URL}/auth/login`
-      );
+      const loginURL = `${API_URL}/auth/login`;
 
-      const response = await fetch(
-        `${API_URL}/auth/login`,
-        {
-          method: "POST",
+      console.log("LOGIN API:", loginURL);
 
-          headers: {
-            "Content-Type": "application/json",
-          },
+      const response = await fetch(loginURL, {
+        method: "POST",
 
-          body: JSON.stringify({
-            email: formData.email.trim().toLowerCase(),
-            password: formData.password,
-          }),
-        }
-      );
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          email: formData.email.trim().toLowerCase(),
+          password: formData.password,
+        }),
+      });
 
       // =====================================
       // SAFE RESPONSE PARSING
@@ -86,15 +83,8 @@ function Login() {
         data = {};
       }
 
-      console.log(
-        "LOGIN STATUS:",
-        response.status
-      );
-
-      console.log(
-        "LOGIN RESPONSE:",
-        data
-      );
+      console.log("LOGIN STATUS:", response.status);
+      console.log("LOGIN RESPONSE:", data);
 
       // =====================================
       // BACKEND ERROR
@@ -148,10 +138,7 @@ function Login() {
       );
 
       if (!userId) {
-        console.error(
-          "USER ID MISSING:",
-          user
-        );
+        console.error("USER ID MISSING:", user);
 
         setError(
           "Login successful but User ID is missing."
@@ -160,10 +147,7 @@ function Login() {
         return;
       }
 
-      console.log(
-        "USER ID:",
-        userId
-      );
+      console.log("USER ID:", userId);
 
       // =====================================
       // SAVE USER ID
@@ -227,23 +211,17 @@ function Login() {
 
       console.log(
         "SAVED userId:",
-        localStorage.getItem(
-          "userId"
-        )
+        localStorage.getItem("userId")
       );
 
       console.log(
         "SAVED smartSpendUser:",
-        localStorage.getItem(
-          "smartSpendUser"
-        )
+        localStorage.getItem("smartSpendUser")
       );
 
       console.log(
         "SAVED userName:",
-        localStorage.getItem(
-          "userName"
-        )
+        localStorage.getItem("userName")
       );
 
       // =====================================
@@ -253,10 +231,7 @@ function Login() {
       navigate("/dashboard");
 
     } catch (error) {
-      console.error(
-        "LOGIN ERROR:",
-        error
-      );
+      console.error("LOGIN ERROR:", error);
 
       setError(
         "Unable to connect to SmartSpend server. Please try again."
@@ -306,13 +281,17 @@ function Login() {
 
           {/* HEADING */}
 
-          <h1 className="text-3xl font-bold text-white">
-            Welcome Back
-          </h1>
+          <div className="mb-8">
 
-          <p className="text-slate-400 mt-2 mb-8">
-            Sign in to continue to your SmartSpend account.
-          </p>
+            <h1 className="text-3xl font-bold text-white">
+              Welcome Back
+            </h1>
+
+            <p className="text-slate-400 mt-2">
+              Sign in to continue to your SmartSpend account.
+            </p>
+
+          </div>
 
           {/* =====================================
               LOGIN FORM
