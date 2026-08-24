@@ -17,22 +17,6 @@ function Developer() {
     });
   };
 
-  const openGitHub = () => {
-    window.open(
-      "https://github.com/Amirkhan786-coder",
-      "_blank",
-      "noopener,noreferrer"
-    );
-  };
-
-  const openLinkedIn = () => {
-    window.open(
-      "https://www.linkedin.com/in/md-amir-khan-91amir35khan/",
-      "_blank",
-      "noopener,noreferrer"
-    );
-  };
-
   return (
     <div className="min-h-screen bg-slate-950 text-white">
 
@@ -352,23 +336,27 @@ function Developer() {
 
                 <div className="flex flex-col sm:flex-row gap-3">
 
-                  <button
-                    type="button"
-                    onClick={openGitHub}
+                  {/* GITHUB */}
+                  <a
+                    href="https://github.com/Amirkhan786-coder"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-950 border border-slate-700 hover:border-emerald-500 hover:text-emerald-400 transition cursor-pointer"
                   >
                     💻
                     <span>GitHub</span>
-                  </button>
+                  </a>
 
-                  <button
-                    type="button"
-                    onClick={openLinkedIn}
+                  {/* LINKEDIN */}
+                  <a
+                    href="https://www.linkedin.com/in/md-amir-khan-91amir35khan/"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-950 border border-slate-700 hover:border-emerald-500 hover:text-emerald-400 transition cursor-pointer"
                   >
                     🔗
                     <span>LinkedIn</span>
-                  </button>
+                  </a>
 
                 </div>
 
@@ -387,4 +375,3 @@ function Developer() {
 }
 
 export default Developer;
-
