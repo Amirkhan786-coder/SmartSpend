@@ -35,10 +35,13 @@ app.use(
       "http://localhost:5173",
       "http://localhost:5174",
 
-      // Vercel Production URLs
+      // Old Vercel Production URLs
       "https://smart-spend-exfkt2vhp-md-amir-khan.vercel.app",
       "https://smart-spend-q555i9ewl-md-amir-khan.vercel.app",
       "https://smart-spend-phvxy619b-md-amir-khan.vercel.app",
+
+      // Current Vercel Production URL
+      "https://smart-spend-phi-topaz.vercel.app",
     ],
     credentials: true,
   })
