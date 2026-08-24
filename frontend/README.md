@@ -1,16 +1,79 @@
-# React + Vite
+# SmartSpend 💰
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### Personal Finance Management Web Application
 
-Currently, two official plugins are available:
+SmartSpend is a modern personal finance management web application designed to help users track their income and expenses, manage monthly budgets, analyze spending patterns, and make better financial decisions.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🌐 Live Demo
 
-## React Compiler
+https://smart-spend-phi-topaz.vercel.app/
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## ✨ Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- 💰 Income & Expense Tracking
+- 📊 Financial Analytics
+- 🎯 Monthly Budget Management
+- 🤖 AI-Powered Financial Insights
+- 🔍 Expense Search & Category Filtering
+- 👤 User Authentication
+- ⚙️ User Settings
+- 🔔 Notifications
+- 🌙 Light & Dark Theme
+- 📱 Responsive Design
+- 🔐 User-specific Financial Data
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- React.js
+- Vite
+- Tailwind CSS
+- React Router
+
+### Backend
+- Node.js
+- Express.js
+- REST API
+
+### Database
+- MongoDB
+- Mongoose
+
+### Deployment
+- Vercel
+- Render
+
+---
+
+## 📌 Main Modules
+
+### Dashboard
+View your overall financial summary including income, expenses, balance and recent financial activity.
+
+### Expenses
+Add, search, filter and delete your expenses while keeping track of your spending history.
+
+### Budgets
+Create monthly budgets for different categories and monitor your spending progress.
+
+### Analytics
+Analyze your financial activity and understand your spending patterns.
+
+### AI Insights
+Get useful financial insights based on your spending information.
+
+### Settings
+Manage your profile, preferences and application settings.
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Amirkhan786-coder/SmartSpend.git
