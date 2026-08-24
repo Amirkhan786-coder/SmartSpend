@@ -1,21 +1,57 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
 import { useBudgets } from "../context/BudgetContext";
 import { useExpenses } from "../context/ExpenseContext";
 
 function Budgets() {
   const {
-    budgets,
+    budgets = [],
     addBudget,
     updateBudget,
     deleteBudget,
-    totalBudget,
+    totalBudget = 0,
     loading,
   } = useBudgets();
 
-  const { expenses } = useExpenses();
+  const { expenses = [] } = useExpenses();
+
+  // =====================================================
+  // THEME
+  // =====================================================
+
+  const [darkMode, setDarkMode] = useState(
+    () => localStorage.getItem("smartSpendTheme") !== "light"
+  );
+
+  useEffect(() => {
+    const syncTheme = () => {
+      setDarkMode(
+        localStorage.getItem("smartSpendTheme") !== "light"
+      );
+    };
+
+    syncTheme();
+
+    window.addEventListener("storage", syncTheme);
+
+    const interval = setInterval(syncTheme, 300);
+
+    return () => {
+      window.removeEventListener("storage", syncTheme);
+      clearInterval(interval);
+    };
+  }, []);
+
+  // =====================================================
+  // MODAL
+  // =====================================================
 
   const [showModal, setShowModal] = useState(false);
   const [editingBudget, setEditingBudget] = useState(null);
+
+  // =====================================================
+  // FORM
+  // =====================================================
 
   const [formData, setFormData] = useState({
     category: "",
@@ -24,17 +60,53 @@ function Budgets() {
     icon: "💰",
   });
 
-  // =========================
+  // =====================================================
+  // THEME CLASSES
+  // =====================================================
+
+  const pageBg = darkMode
+    ? "bg-[#07111f] text-white"
+    : "bg-slate-50 text-slate-900";
+
+  const cardBg = darkMode
+    ? "bg-slate-900 border-slate-800"
+    : "bg-white border-slate-200";
+
+  const cardText = darkMode
+    ? "text-white"
+    : "text-slate-900";
+
+  const secondaryText = darkMode
+    ? "text-slate-400"
+    : "text-slate-600";
+
+  const mutedText = darkMode
+    ? "text-slate-500"
+    : "text-slate-500";
+
+  const inputBg = darkMode
+    ? "bg-slate-950"
+    : "bg-white";
+
+  const inputBorder = darkMode
+    ? "border-slate-700"
+    : "border-slate-300";
+
+  const progressBg = darkMode
+    ? "bg-slate-800"
+    : "bg-slate-200";
+
+  // =====================================================
   // FORMAT CURRENCY
-  // =========================
+  // =====================================================
 
   const formatCurrency = (amount) => {
-    return `₹${Number(amount).toLocaleString("en-IN")}`;
+    return `₹${Number(amount || 0).toLocaleString("en-IN")}`;
   };
 
-  // =========================
+  // =====================================================
   // FORMAT MONTH
-  // =========================
+  // =====================================================
 
   const formatMonth = (month) => {
     if (!month) return "";
@@ -47,54 +119,72 @@ function Budgets() {
     });
   };
 
-  // =========================
+  // =====================================================
   // HANDLE INPUT
-  // =========================
+  // =====================================================
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setFormData((current) => ({
+      ...current,
+      [name]: value,
+    }));
   };
 
-  // =========================
-  // OPEN ADD MODAL
-  // =========================
+  // =====================================================
+  // RESET FORM
+  // =====================================================
 
-  const openAddModal = () => {
-    setEditingBudget(null);
-
+  const resetForm = () => {
     setFormData({
       category: "",
       amount: "",
       month: new Date().toISOString().slice(0, 7),
       icon: "💰",
     });
+  };
 
+  // =====================================================
+  // OPEN ADD MODAL
+  // =====================================================
+
+  const openAddModal = () => {
+    setEditingBudget(null);
+    resetForm();
     setShowModal(true);
   };
 
-  // =========================
+  // =====================================================
   // OPEN EDIT MODAL
-  // =========================
+  // =====================================================
 
   const openEditModal = (budget) => {
     setEditingBudget(budget);
 
     setFormData({
-      category: budget.category,
-      amount: budget.amount,
-      month: budget.month,
+      category: budget.category || "",
+      amount: budget.amount || "",
+      month: budget.month || "",
       icon: budget.icon || "💰",
     });
 
     setShowModal(true);
   };
 
-  // =========================
-  // ADD / UPDATE
-  // =========================
+  // =====================================================
+  // CLOSE MODAL
+  // =====================================================
+
+  const closeModal = () => {
+    setShowModal(false);
+    setEditingBudget(null);
+    resetForm();
+  };
+
+  // =====================================================
+  // ADD / UPDATE BUDGET
+  // =====================================================
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -109,30 +199,32 @@ function Budgets() {
     }
 
     try {
+      const budgetData = {
+        category: formData.category.trim(),
+        amount: Number(formData.amount),
+        month: formData.month,
+        icon: formData.icon,
+      };
+
       if (editingBudget) {
-        await updateBudget(editingBudget._id, formData);
+        await updateBudget(
+          editingBudget._id,
+          budgetData
+        );
       } else {
-        await addBudget(formData);
+        await addBudget(budgetData);
       }
 
-      setShowModal(false);
-      setEditingBudget(null);
-
-      setFormData({
-        category: "",
-        amount: "",
-        month: new Date().toISOString().slice(0, 7),
-        icon: "💰",
-      });
+      closeModal();
     } catch (error) {
       console.error("Budget save error:", error);
       alert("Failed to save budget.");
     }
   };
 
-  // =========================
+  // =====================================================
   // DELETE
-  // =========================
+  // =====================================================
 
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
@@ -149,9 +241,9 @@ function Budgets() {
     }
   };
 
-  // =========================
+  // =====================================================
   // CALCULATE SPENDING
-  // =========================
+  // =====================================================
 
   const getBudgetSpending = (budget) => {
     const budgetCategory = budget.category
@@ -182,9 +274,9 @@ function Budgets() {
       );
   };
 
-  // =========================
+  // =====================================================
   // BUDGET SUMMARY
-  // =========================
+  // =====================================================
 
   const budgetSummary = useMemo(() => {
     return budgets.map((budget) => {
@@ -206,243 +298,198 @@ function Budgets() {
     });
   }, [budgets, expenses]);
 
+  // =====================================================
+  // TOTAL SPENT
+  // =====================================================
+
+  const totalSpent = useMemo(() => {
+    return budgetSummary.reduce(
+      (total, budget) =>
+        total + Number(budget.spent || 0),
+      0
+    );
+  }, [budgetSummary]);
+
+  // =====================================================
+  // TOTAL REMAINING
+  // =====================================================
+
+  const totalRemaining = useMemo(() => {
+    return budgetSummary.reduce(
+      (total, budget) =>
+        total + Number(budget.remaining || 0),
+      0
+    );
+  }, [budgetSummary]);
+
+  // =====================================================
+  // RENDER
+  // =====================================================
+
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <main
+      className={`min-h-[calc(100vh-4rem)] transition-colors duration-300 ${pageBg}`}
+    >
+      <div className="p-4 sm:p-6 lg:p-8">
+        <div className="max-w-7xl mx-auto">
 
-      {/* HEADER */}
+          {/* =================================================
+              PAGE HEADER
+          ================================================= */}
 
-      <header className="h-16 border-b border-slate-800">
-        <div className="h-full px-6 flex items-center justify-between">
-
-          <div className="flex items-center gap-2">
-
-            <div className="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center">
-              💰
-            </div>
-
-            <span className="text-xl font-bold">
-              Smart
-              <span className="text-emerald-400">
-                Spend
-              </span>
-            </span>
-
-          </div>
-
-          <div className="flex items-center gap-4">
-
-            <button className="w-9 h-9 rounded-lg hover:bg-slate-900">
-              🔔
-            </button>
-
-            <div className="w-9 h-9 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-bold">
-              A
-            </div>
-
-          </div>
-
-        </div>
-      </header>
-
-      <div className="flex">
-
-        {/* SIDEBAR */}
-
-        <aside className="hidden md:block w-64 min-h-[calc(100vh-4rem)] border-r border-slate-800">
-
-          <div className="p-4">
-
-            <p className="px-3 mb-3 text-xs uppercase tracking-wider text-slate-500 font-semibold">
-              Main Menu
-            </p>
-
-            <a
-              href="/dashboard"
-              className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white"
-            >
-              🏠 Dashboard
-            </a>
-
-            <a
-              href="/expenses"
-              className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white"
-            >
-              💳 Expenses
-            </a>
-
-            <a
-              href="/analytics"
-              className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white"
-            >
-              📊 Analytics
-            </a>
-
-            <a
-              href="/budgets"
-              className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl bg-emerald-500/10 text-emerald-400"
-            >
-              💰 Budgets
-            </a>
-
-            <a
-              href="/ai-insights"
-              className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white"
-            >
-              🤖 AI Insights
-            </a>
-
-            <div className="border-t border-slate-800 my-6" />
-
-            <a
-              href="/settings"
-              className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white"
-            >
-              ⚙️ Settings
-            </a>
-
-            <a
-              href="/"
-              className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl text-red-400 hover:bg-red-500/10"
-            >
-              🚪 Logout
-            </a>
-
-          </div>
-
-        </aside>
-
-        {/* MAIN */}
-
-        <main className="flex-1 p-6 md:p-8">
-
-          {/* HEADER */}
-
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-8">
+          <section className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
 
             <div>
-
-              <p className="text-sm text-emerald-400 font-medium">
+              <p className="text-sm text-emerald-500 font-medium mb-2">
                 Financial Management
               </p>
 
-              <h1 className="text-3xl md:text-4xl font-bold mt-2">
+              <h1
+                className={`text-3xl md:text-4xl font-bold tracking-tight ${cardText}`}
+              >
                 Budgets
               </h1>
 
-              <p className="text-slate-400 mt-2">
+              <p
+                className={`mt-2 ${secondaryText}`}
+              >
                 Set and manage your monthly spending limits.
               </p>
-
             </div>
 
             <button
+              type="button"
               onClick={openAddModal}
               className="px-5 py-3 rounded-xl bg-emerald-500 text-slate-950 font-semibold hover:bg-emerald-400 transition"
             >
-              + Add Budget
+              <span className="mr-1">+</span>
+              Add Budget
             </button>
 
-          </div>
+          </section>
 
-          {/* TOTAL BUDGET */}
+          {/* =================================================
+              SUMMARY
+          ================================================= */}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
 
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+            {/* TOTAL BUDGET */}
 
-              <p className="text-sm text-slate-400">
+            <div
+              className={`rounded-2xl border p-6 transition-colors duration-300 ${cardBg}`}
+            >
+              <p className={`text-sm ${secondaryText}`}>
                 Total Budget
               </p>
 
-              <h2 className="text-3xl font-bold mt-2">
+              <h2
+                className={`text-3xl font-bold mt-3 ${cardText}`}
+              >
                 {formatCurrency(totalBudget)}
               </h2>
 
-              <p className="text-sm text-slate-500 mt-2">
+              <p
+                className={`text-sm mt-2 ${mutedText}`}
+              >
                 Across all categories
               </p>
-
             </div>
 
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+            {/* TOTAL SPENT */}
 
-              <p className="text-sm text-slate-400">
+            <div
+              className={`rounded-2xl border p-6 transition-colors duration-300 ${cardBg}`}
+            >
+              <p className={`text-sm ${secondaryText}`}>
                 Total Spent
               </p>
 
-              <h2 className="text-3xl font-bold mt-2 text-red-400">
-                {formatCurrency(
-                  budgetSummary.reduce(
-                    (total, budget) =>
-                      total + budget.spent,
-                    0
-                  )
-                )}
+              <h2 className="text-3xl font-bold mt-3 text-red-500">
+                {formatCurrency(totalSpent)}
               </h2>
 
-              <p className="text-sm text-slate-500 mt-2">
+              <p
+                className={`text-sm mt-2 ${mutedText}`}
+              >
                 From budget categories
               </p>
-
             </div>
 
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+            {/* REMAINING */}
 
-              <p className="text-sm text-slate-400">
+            <div
+              className={`rounded-2xl border p-6 transition-colors duration-300 ${cardBg}`}
+            >
+              <p className={`text-sm ${secondaryText}`}>
                 Remaining Budget
               </p>
 
-              <h2 className="text-3xl font-bold mt-2 text-emerald-400">
+              <h2
+                className={`text-3xl font-bold mt-3 ${
+                  totalRemaining >= 0
+                    ? "text-emerald-500"
+                    : "text-red-500"
+                }`}
+              >
                 {formatCurrency(
-                  budgetSummary.reduce(
-                    (total, budget) =>
-                      total + budget.remaining,
-                    0
-                  )
+                  Math.abs(totalRemaining)
                 )}
               </h2>
 
-              <p className="text-sm text-slate-500 mt-2">
-                Available spending limit
+              <p
+                className={`text-sm mt-2 ${mutedText}`}
+              >
+                {totalRemaining >= 0
+                  ? "Available spending limit"
+                  : "Amount over budget"}
               </p>
-
             </div>
 
-          </div>
+          </section>
 
-          {/* BUDGET LIST */}
+          {/* =================================================
+              BUDGET LIST
+          ================================================= */}
 
           {loading ? (
 
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-10 text-center">
-              <p className="text-slate-400">
+            <div
+              className={`rounded-2xl border p-10 text-center ${cardBg}`}
+            >
+              <p className={secondaryText}>
                 Loading budgets...
               </p>
             </div>
 
           ) : budgets.length === 0 ? (
 
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-12 text-center">
-
+            <div
+              className={`rounded-2xl border p-12 text-center ${cardBg}`}
+            >
               <div className="text-6xl mb-5">
                 💰
               </div>
 
-              <h2 className="text-xl font-semibold">
+              <h2
+                className={`text-xl font-semibold ${cardText}`}
+              >
                 No budgets yet
               </h2>
 
-              <p className="text-slate-500 mt-2">
+              <p
+                className={`mt-2 ${secondaryText}`}
+              >
                 Create your first budget to control your spending.
               </p>
 
               <button
+                type="button"
                 onClick={openAddModal}
-                className="mt-6 px-5 py-3 rounded-xl bg-emerald-500 text-slate-950 font-semibold hover:bg-emerald-400"
+                className="mt-6 px-5 py-3 rounded-xl bg-emerald-500 text-slate-950 font-semibold hover:bg-emerald-400 transition"
               >
                 + Create Budget
               </button>
-
             </div>
 
           ) : (
@@ -464,43 +511,50 @@ function Budgets() {
                   budget.percentage < 100;
 
                 return (
-
                   <div
                     key={budget._id}
-                    className={`bg-slate-900 border rounded-2xl p-6 transition ${
+                    className={`rounded-2xl border p-6 transition ${
                       isOverspent
                         ? "border-red-500/40"
                         : isWarning
                         ? "border-yellow-500/40"
-                        : "border-slate-800 hover:border-emerald-500/30"
+                        : darkMode
+                        ? "border-slate-800 hover:border-emerald-500/30 bg-slate-900"
+                        : "border-slate-200 hover:border-emerald-500/30 bg-white"
                     }`}
                   >
 
                     {/* TOP */}
 
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-start justify-between gap-4">
 
                       <div className="flex items-center gap-3">
 
-                        <div className="w-12 h-12 rounded-xl bg-slate-950 flex items-center justify-center text-2xl">
+                        <div
+                          className={`w-12 h-12 rounded-xl border flex items-center justify-center text-2xl ${
+                            darkMode
+                              ? "bg-slate-950 border-slate-800"
+                              : "bg-slate-50 border-slate-200"
+                          }`}
+                        >
                           {budget.icon || "💰"}
                         </div>
 
                         <div>
-
-                          <h3 className="font-semibold text-lg">
+                          <h3
+                            className={`font-semibold text-lg ${cardText}`}
+                          >
                             {budget.category}
                           </h3>
 
-                          <p className="text-xs text-slate-500 mt-1">
+                          <p className={`text-xs mt-1 ${mutedText}`}>
                             {formatMonth(budget.month)}
                           </p>
-
                         </div>
 
                       </div>
 
-                      <span className="text-emerald-400 font-bold">
+                      <span className="text-emerald-500 font-bold whitespace-nowrap">
                         {formatCurrency(budget.limit)}
                       </span>
 
@@ -512,15 +566,15 @@ function Budgets() {
 
                       <div className="flex justify-between text-sm mb-2">
 
-                        <span className="text-slate-400">
+                        <span className={secondaryText}>
                           Spent
                         </span>
 
                         <span
                           className={
                             isOverspent
-                              ? "text-red-400 font-semibold"
-                              : "text-slate-300"
+                              ? "text-red-500 font-semibold"
+                              : cardText
                           }
                         >
                           {formatCurrency(budget.spent)}
@@ -528,8 +582,9 @@ function Budgets() {
 
                       </div>
 
-                      <div className="h-3 bg-slate-800 rounded-full overflow-hidden">
-
+                      <div
+                        className={`h-3 rounded-full overflow-hidden ${progressBg}`}
+                      >
                         <div
                           className={`h-full rounded-full transition-all duration-500 ${
                             isOverspent
@@ -542,16 +597,15 @@ function Budgets() {
                             width: `${progressWidth}%`,
                           }}
                         />
-
                       </div>
 
                       <div className="flex justify-between mt-2">
 
-                        <span className="text-xs text-slate-500">
+                        <span className={`text-xs ${mutedText}`}>
                           {budget.percentage.toFixed(1)}% used
                         </span>
 
-                        <span className="text-xs text-slate-500">
+                        <span className={`text-xs ${mutedText}`}>
                           Limit {formatCurrency(budget.limit)}
                         </span>
 
@@ -573,7 +627,7 @@ function Budgets() {
 
                       {isOverspent ? (
 
-                        <p className="text-sm text-red-400 font-medium">
+                        <p className="text-sm text-red-500 font-medium">
                           ⚠️ Over budget by{" "}
                           {formatCurrency(
                             Math.abs(budget.remaining)
@@ -582,13 +636,13 @@ function Budgets() {
 
                       ) : isWarning ? (
 
-                        <p className="text-sm text-yellow-400 font-medium">
+                        <p className="text-sm text-yellow-500 font-medium">
                           ⚠️ You are close to your budget limit.
                         </p>
 
                       ) : (
 
-                        <p className="text-sm text-emerald-400 font-medium">
+                        <p className="text-sm text-emerald-500 font-medium">
                           ✓ Remaining{" "}
                           {formatCurrency(budget.remaining)}
                         </p>
@@ -602,19 +656,25 @@ function Budgets() {
                     <div className="flex gap-3 mt-6">
 
                       <button
+                        type="button"
                         onClick={() =>
                           openEditModal(budget)
                         }
-                        className="flex-1 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800"
+                        className={`flex-1 py-2.5 rounded-xl border transition ${
+                          darkMode
+                            ? "border-slate-700 text-slate-300 hover:bg-slate-800"
+                            : "border-slate-300 text-slate-600 hover:bg-slate-100"
+                        }`}
                       >
                         ✏️ Edit
                       </button>
 
                       <button
+                        type="button"
                         onClick={() =>
                           handleDelete(budget._id)
                         }
-                        className="flex-1 py-2.5 rounded-xl border border-red-500/20 text-red-400 hover:bg-red-500/10"
+                        className="flex-1 py-2.5 rounded-xl border border-red-500/20 text-red-500 hover:bg-red-500/10 transition"
                       >
                         🗑️ Delete
                       </button>
@@ -629,50 +689,64 @@ function Budgets() {
 
           )}
 
-        </main>
-
+        </div>
       </div>
 
-      {/* ADD / EDIT MODAL */}
+      {/* =====================================================
+          ADD / EDIT MODAL
+      ===================================================== */}
 
       {showModal && (
 
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center px-5">
 
-          <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl">
+          <div
+            className={`w-full max-w-md rounded-2xl border p-6 shadow-2xl ${cardBg}`}
+          >
+
+            {/* MODAL HEADER */}
 
             <div className="flex items-center justify-between mb-6">
 
               <div>
-
-                <h2 className="text-xl font-bold">
+                <h2
+                  className={`text-xl font-bold ${cardText}`}
+                >
                   {editingBudget
                     ? "Edit Budget"
                     : "Add Budget"}
                 </h2>
 
-                <p className="text-sm text-slate-500 mt-1">
+                <p
+                  className={`text-sm mt-1 ${mutedText}`}
+                >
                   Set your spending limit.
                 </p>
-
               </div>
 
               <button
-                onClick={() =>
-                  setShowModal(false)
-                }
-                className="w-9 h-9 rounded-lg text-slate-400 hover:bg-slate-800"
+                type="button"
+                onClick={closeModal}
+                className={`w-9 h-9 rounded-lg text-lg transition ${
+                  darkMode
+                    ? "text-slate-400 hover:bg-slate-800"
+                    : "text-slate-500 hover:bg-slate-100"
+                }`}
               >
-                ✕
+                ×
               </button>
 
             </div>
 
             <form onSubmit={handleSubmit}>
 
+              {/* CATEGORY */}
+
               <div className="mb-4">
 
-                <label className="block text-sm text-slate-300 mb-2">
+                <label
+                  className={`block text-sm mb-2 ${secondaryText}`}
+                >
                   Category
                 </label>
 
@@ -682,14 +756,18 @@ function Budgets() {
                   onChange={handleChange}
                   type="text"
                   placeholder="e.g. Food, Transport"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-500 outline-none focus:border-emerald-500"
+                  className={`w-full px-4 py-3 rounded-xl border outline-none transition ${inputBg} ${inputBorder} ${cardText}`}
                 />
 
               </div>
 
+              {/* AMOUNT */}
+
               <div className="mb-4">
 
-                <label className="block text-sm text-slate-300 mb-2">
+                <label
+                  className={`block text-sm mb-2 ${secondaryText}`}
+                >
                   Budget Amount
                 </label>
 
@@ -700,14 +778,18 @@ function Budgets() {
                   type="number"
                   min="1"
                   placeholder="Enter amount"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-500 outline-none focus:border-emerald-500"
+                  className={`w-full px-4 py-3 rounded-xl border outline-none transition ${inputBg} ${inputBorder} ${cardText}`}
                 />
 
               </div>
 
+              {/* MONTH */}
+
               <div className="mb-4">
 
-                <label className="block text-sm text-slate-300 mb-2">
+                <label
+                  className={`block text-sm mb-2 ${secondaryText}`}
+                >
                   Month
                 </label>
 
@@ -716,14 +798,18 @@ function Budgets() {
                   value={formData.month}
                   onChange={handleChange}
                   type="month"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white outline-none focus:border-emerald-500"
+                  className={`w-full px-4 py-3 rounded-xl border outline-none transition ${inputBg} ${inputBorder} ${cardText}`}
                 />
 
               </div>
 
+              {/* ICON */}
+
               <div className="mb-6">
 
-                <label className="block text-sm text-slate-300 mb-2">
+                <label
+                  className={`block text-sm mb-2 ${secondaryText}`}
+                >
                   Icon
                 </label>
 
@@ -731,35 +817,63 @@ function Budgets() {
                   name="icon"
                   value={formData.icon}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-slate-300 outline-none focus:border-emerald-500"
+                  className={`w-full px-4 py-3 rounded-xl border outline-none transition ${inputBg} ${inputBorder} ${cardText}`}
                 >
-                  <option value="💰">💰 General</option>
-                  <option value="🍔">🍔 Food</option>
-                  <option value="🚌">🚌 Transport</option>
-                  <option value="🛍️">🛍️ Shopping</option>
-                  <option value="🏠">🏠 Housing</option>
-                  <option value="🎓">🎓 Education</option>
-                  <option value="💊">💊 Health</option>
-                  <option value="🎮">🎮 Entertainment</option>
+                  <option value="💰">
+                    💰 General
+                  </option>
+
+                  <option value="🍔">
+                    🍔 Food
+                  </option>
+
+                  <option value="🚌">
+                    🚌 Transport
+                  </option>
+
+                  <option value="🛍️">
+                    🛍️ Shopping
+                  </option>
+
+                  <option value="🏠">
+                    🏠 Housing
+                  </option>
+
+                  <option value="🎓">
+                    🎓 Education
+                  </option>
+
+                  <option value="💊">
+                    💊 Health
+                  </option>
+
+                  <option value="🎮">
+                    🎮 Entertainment
+                  </option>
+
                 </select>
 
               </div>
+
+              {/* BUTTONS */}
 
               <div className="flex gap-3">
 
                 <button
                   type="button"
-                  onClick={() =>
-                    setShowModal(false)
-                  }
-                  className="flex-1 py-3 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800"
+                  onClick={closeModal}
+                  className={`flex-1 py-3 rounded-xl border transition ${
+                    darkMode
+                      ? "border-slate-700 text-slate-300 hover:bg-slate-800"
+                      : "border-slate-300 text-slate-700 hover:bg-slate-100"
+                  }`}
                 >
                   Cancel
                 </button>
 
                 <button
                   type="submit"
-                  className="flex-1 py-3 rounded-xl bg-emerald-500 text-slate-950 font-semibold hover:bg-emerald-400"
+                  className="flex-1 py-3 rounded-xl bg-emerald-500 text-slate-950 font-semibold hover:bg-emerald-400 transition"
                 >
                   {editingBudget
                     ? "Update Budget"
@@ -776,9 +890,8 @@ function Budgets() {
 
       )}
 
-    </div>
+    </main>
   );
 }
 
 export default Budgets;
-

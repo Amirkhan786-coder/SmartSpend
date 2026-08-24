@@ -1,8 +1,39 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useExpenses } from "../context/ExpenseContext";
 
 function AIInsights() {
   const { expenses, loading, totalExpenses } = useExpenses();
+
+  // =====================================================
+  // THEME
+  // =====================================================
+
+  const [darkMode, setDarkMode] = useState(
+    () => localStorage.getItem("smartSpendTheme") !== "light"
+  );
+
+  useEffect(() => {
+    const syncTheme = () => {
+      setDarkMode(
+        localStorage.getItem("smartSpendTheme") !== "light"
+      );
+    };
+
+    syncTheme();
+
+    window.addEventListener("storage", syncTheme);
+
+    const interval = setInterval(syncTheme, 300);
+
+    return () => {
+      window.removeEventListener("storage", syncTheme);
+      clearInterval(interval);
+    };
+  }, []);
+
+  // =====================================================
+  // ANALYSIS
+  // =====================================================
 
   const analysis = useMemo(() => {
     if (!expenses || expenses.length === 0) {
@@ -71,6 +102,10 @@ function AIInsights() {
     };
   }, [expenses]);
 
+  // =====================================================
+  // HELPERS
+  // =====================================================
+
   const formatCurrency = (amount) => {
     return `₹${Number(amount || 0).toLocaleString(
       "en-IN",
@@ -122,22 +157,70 @@ function AIInsights() {
     return "📦";
   };
 
-  // =========================
+  // =====================================================
+  // THEME CLASSES
+  // =====================================================
+
+  const pageBg = darkMode
+    ? "bg-[#07111f] text-white"
+    : "bg-slate-50 text-slate-900";
+
+  const cardBg = darkMode
+    ? "bg-[#0b1728] border-slate-800"
+    : "bg-white border-slate-200";
+
+  const cardText = darkMode
+    ? "text-white"
+    : "text-slate-900";
+
+  const secondaryText = darkMode
+    ? "text-slate-400"
+    : "text-slate-600";
+
+  const mutedText = darkMode
+    ? "text-slate-500"
+    : "text-slate-500";
+
+  const progressBg = darkMode
+    ? "bg-slate-800"
+    : "bg-slate-200";
+
+  // =====================================================
   // LOADING
-  // =========================
+  // =====================================================
 
   if (loading) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] bg-[#07111f] text-white p-6 md:p-8">
+      <div
+        className={`min-h-[calc(100vh-4rem)] p-6 md:p-8 transition-colors duration-300 ${pageBg}`}
+      >
         <div className="max-w-6xl mx-auto">
 
           <div className="animate-pulse">
 
-            <div className="h-4 w-32 bg-slate-800 rounded mb-3" />
+            <div
+              className={`h-4 w-32 rounded mb-3 ${
+                darkMode
+                  ? "bg-slate-800"
+                  : "bg-slate-200"
+              }`}
+            />
 
-            <div className="h-10 w-64 bg-slate-800 rounded mb-3" />
+            <div
+              className={`h-10 w-64 rounded mb-3 ${
+                darkMode
+                  ? "bg-slate-800"
+                  : "bg-slate-200"
+              }`}
+            />
 
-            <div className="h-5 w-96 max-w-full bg-slate-800 rounded" />
+            <div
+              className={`h-5 w-96 max-w-full rounded ${
+                darkMode
+                  ? "bg-slate-800"
+                  : "bg-slate-200"
+              }`}
+            />
 
           </div>
 
@@ -147,7 +230,9 @@ function AIInsights() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-[#07111f] text-white p-6 md:p-8">
+    <div
+      className={`min-h-[calc(100vh-4rem)] p-6 md:p-8 transition-colors duration-300 ${pageBg}`}
+    >
 
       <div className="max-w-6xl mx-auto">
 
@@ -157,15 +242,17 @@ function AIInsights() {
 
         <div className="mb-8">
 
-          <p className="text-sm text-emerald-400 font-semibold tracking-wide">
+          <p className="text-sm text-emerald-500 font-semibold tracking-wide">
             SMART ANALYSIS
           </p>
 
-          <h1 className="text-3xl md:text-4xl font-bold mt-2 text-white">
+          <h1
+            className={`text-3xl md:text-4xl font-bold mt-2 ${cardText}`}
+          >
             AI Insights
           </h1>
 
-          <p className="text-slate-400 mt-2">
+          <p className={`mt-2 ${secondaryText}`}>
             Intelligent analysis of your real spending data.
           </p>
 
@@ -177,17 +264,33 @@ function AIInsights() {
 
         {expenses.length === 0 ? (
 
-          <div className="rounded-3xl border border-emerald-500/20 bg-[#0b1728] p-8 md:p-10">
+          <div
+            className={`rounded-3xl border p-8 md:p-10 transition-colors duration-300 ${
+              darkMode
+                ? "border-emerald-500/20 bg-[#0b1728]"
+                : "border-emerald-200 bg-white"
+            }`}
+          >
 
-            <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-3xl mb-5">
+            <div
+              className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mb-5 ${
+                darkMode
+                  ? "bg-emerald-500/10"
+                  : "bg-emerald-50"
+              }`}
+            >
               🤖
             </div>
 
-            <h2 className="text-2xl font-bold text-white">
+            <h2
+              className={`text-2xl font-bold ${cardText}`}
+            >
               SmartSpend AI
             </h2>
 
-            <p className="text-slate-400 mt-3 max-w-xl leading-relaxed">
+            <p
+              className={`mt-3 max-w-xl leading-relaxed ${secondaryText}`}
+            >
               Your personalized insights will appear here after
               you add expenses. Add your spending data to see
               category analysis, spending patterns and
@@ -199,29 +302,46 @@ function AIInsights() {
         ) : (
 
           <>
+
             {/* =================================================
                 AI SUMMARY
             ================================================= */}
 
-            <div className="rounded-3xl border border-emerald-500/20 bg-[#0b1728] p-6 md:p-8 mb-6">
+            <div
+              className={`rounded-3xl border p-6 md:p-8 mb-6 transition-colors duration-300 ${
+                darkMode
+                  ? "border-emerald-500/20 bg-[#0b1728]"
+                  : "border-emerald-200 bg-white"
+              }`}
+            >
 
               <div className="flex flex-col md:flex-row md:items-start gap-5">
 
-                <div className="w-14 h-14 shrink-0 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-3xl">
+                <div
+                  className={`w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center text-3xl ${
+                    darkMode
+                      ? "bg-emerald-500/10"
+                      : "bg-emerald-50"
+                  }`}
+                >
                   🤖
                 </div>
 
                 <div>
 
-                  <p className="text-sm text-emerald-400 font-semibold mb-1">
+                  <p className="text-sm text-emerald-500 font-semibold mb-1">
                     SMARTSPEND AI ANALYSIS
                   </p>
 
-                  <h2 className="text-2xl font-bold text-white">
+                  <h2
+                    className={`text-2xl font-bold ${cardText}`}
+                  >
                     Your spending overview
                   </h2>
 
-                  <p className="text-slate-400 mt-3 leading-relaxed">
+                  <p
+                    className={`mt-3 leading-relaxed ${secondaryText}`}
+                  >
                     {getInsightMessage()}
                   </p>
 
@@ -237,13 +357,19 @@ function AIInsights() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
 
-              <div className="rounded-2xl border border-slate-800 bg-[#0b1728] p-5">
+              {/* TOTAL SPENDING */}
 
-                <p className="text-sm text-slate-400">
+              <div
+                className={`rounded-2xl border p-5 transition-colors duration-300 ${cardBg}`}
+              >
+
+                <p className={`text-sm ${secondaryText}`}>
                   Total Spending
                 </p>
 
-                <h3 className="text-2xl font-bold mt-2 text-white">
+                <h3
+                  className={`text-2xl font-bold mt-2 ${cardText}`}
+                >
                   {formatCurrency(
                     totalExpenses || analysis.total
                   )}
@@ -251,37 +377,55 @@ function AIInsights() {
 
               </div>
 
-              <div className="rounded-2xl border border-slate-800 bg-[#0b1728] p-5">
+              {/* TRANSACTIONS */}
 
-                <p className="text-sm text-slate-400">
+              <div
+                className={`rounded-2xl border p-5 transition-colors duration-300 ${cardBg}`}
+              >
+
+                <p className={`text-sm ${secondaryText}`}>
                   Transactions
                 </p>
 
-                <h3 className="text-2xl font-bold mt-2 text-white">
+                <h3
+                  className={`text-2xl font-bold mt-2 ${cardText}`}
+                >
                   {analysis.transactions}
                 </h3>
 
               </div>
 
-              <div className="rounded-2xl border border-slate-800 bg-[#0b1728] p-5">
+              {/* AVERAGE */}
 
-                <p className="text-sm text-slate-400">
+              <div
+                className={`rounded-2xl border p-5 transition-colors duration-300 ${cardBg}`}
+              >
+
+                <p className={`text-sm ${secondaryText}`}>
                   Average Expense
                 </p>
 
-                <h3 className="text-2xl font-bold mt-2 text-white">
+                <h3
+                  className={`text-2xl font-bold mt-2 ${cardText}`}
+                >
                   {formatCurrency(analysis.average)}
                 </h3>
 
               </div>
 
-              <div className="rounded-2xl border border-slate-800 bg-[#0b1728] p-5">
+              {/* HIGHEST CATEGORY */}
 
-                <p className="text-sm text-slate-400">
+              <div
+                className={`rounded-2xl border p-5 transition-colors duration-300 ${cardBg}`}
+              >
+
+                <p className={`text-sm ${secondaryText}`}>
                   Highest Category
                 </p>
 
-                <h3 className="text-xl font-bold mt-2 text-white">
+                <h3
+                  className={`text-xl font-bold mt-2 ${cardText}`}
+                >
                   {analysis.highestCategory}
                 </h3>
 
@@ -297,17 +441,23 @@ function AIInsights() {
 
               {/* CATEGORY ANALYSIS */}
 
-              <div className="rounded-3xl border border-slate-800 bg-[#0b1728] p-6">
+              <div
+                className={`rounded-3xl border p-6 transition-colors duration-300 ${cardBg}`}
+              >
 
                 <div className="flex items-center justify-between mb-6">
 
                   <div>
 
-                    <h2 className="text-xl font-bold text-white">
+                    <h2
+                      className={`text-xl font-bold ${cardText}`}
+                    >
                       Spending by Category
                     </h2>
 
-                    <p className="text-sm text-slate-400 mt-1">
+                    <p
+                      className={`text-sm mt-1 ${secondaryText}`}
+                    >
                       Where your money is going
                     </p>
 
@@ -336,7 +486,9 @@ function AIInsights() {
                               )}
                             </span>
 
-                            <span className="font-medium text-white">
+                            <span
+                              className={`font-medium ${cardText}`}
+                            >
                               {category.name}
                             </span>
 
@@ -344,13 +496,17 @@ function AIInsights() {
 
                           <div className="text-right">
 
-                            <span className="font-semibold text-white">
+                            <span
+                              className={`font-semibold ${cardText}`}
+                            >
                               {formatCurrency(
                                 category.amount
                               )}
                             </span>
 
-                            <span className="text-xs text-slate-400 ml-2">
+                            <span
+                              className={`text-xs ml-2 ${secondaryText}`}
+                            >
                               {category.percentage.toFixed(
                                 1
                               )}
@@ -361,7 +517,9 @@ function AIInsights() {
 
                         </div>
 
-                        <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
+                        <div
+                          className={`h-2 rounded-full overflow-hidden ${progressBg}`}
+                        >
 
                           <div
                             className="h-full rounded-full bg-emerald-500 transition-all duration-500"
@@ -386,17 +544,23 @@ function AIInsights() {
 
               {/* RECOMMENDATIONS */}
 
-              <div className="rounded-3xl border border-slate-800 bg-[#0b1728] p-6">
+              <div
+                className={`rounded-3xl border p-6 transition-colors duration-300 ${cardBg}`}
+              >
 
                 <div className="flex items-center justify-between mb-6">
 
                   <div>
 
-                    <h2 className="text-xl font-bold text-white">
+                    <h2
+                      className={`text-xl font-bold ${cardText}`}
+                    >
                       Smart Recommendations
                     </h2>
 
-                    <p className="text-sm text-slate-400 mt-1">
+                    <p
+                      className={`text-sm mt-1 ${secondaryText}`}
+                    >
                       Suggestions based on your spending
                     </p>
 
@@ -416,22 +580,36 @@ function AIInsights() {
 
                       <div
                         key={category.name}
-                        className="rounded-2xl bg-[#101e31] border border-slate-800 p-4"
+                        className={`rounded-2xl border p-4 transition-colors duration-300 ${
+                          darkMode
+                            ? "bg-[#101e31] border-slate-800"
+                            : "bg-slate-50 border-slate-200"
+                        }`}
                       >
 
                         <div className="flex gap-3">
 
-                          <div className="w-9 h-9 shrink-0 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                          <div
+                            className={`w-9 h-9 shrink-0 rounded-xl flex items-center justify-center ${
+                              darkMode
+                                ? "bg-emerald-500/10"
+                                : "bg-emerald-50"
+                            }`}
+                          >
                             💡
                           </div>
 
                           <div>
 
-                            <p className="font-semibold text-white">
+                            <p
+                              className={`font-semibold ${cardText}`}
+                            >
                               {category.name}
                             </p>
 
-                            <p className="text-sm text-slate-400 mt-1 leading-relaxed">
+                            <p
+                              className={`text-sm mt-1 leading-relaxed ${secondaryText}`}
+                            >
                               {getRecommendation(
                                 category.name,
                                 category.percentage
@@ -458,22 +636,32 @@ function AIInsights() {
 
             {analysis.highestExpense && (
 
-              <div className="mt-6 rounded-3xl border border-amber-500/20 bg-[#17150d] p-6">
+              <div
+                className={`mt-6 rounded-3xl border p-6 transition-colors duration-300 ${
+                  darkMode
+                    ? "border-amber-500/20 bg-[#17150d]"
+                    : "border-amber-200 bg-amber-50"
+                }`}
+              >
 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
 
                   <div>
 
-                    <p className="text-sm text-amber-400 font-semibold">
+                    <p className="text-sm text-amber-500 font-semibold">
                       HIGHEST SINGLE EXPENSE
                     </p>
 
-                    <h2 className="text-xl font-bold mt-1 text-white">
+                    <h2
+                      className={`text-xl font-bold mt-1 ${cardText}`}
+                    >
                       {analysis.highestExpense.icon || "💳"}{" "}
                       {analysis.highestExpense.title || "Expense"}
                     </h2>
 
-                    <p className="text-sm text-slate-400 mt-1">
+                    <p
+                      className={`text-sm mt-1 ${secondaryText}`}
+                    >
                       {analysis.highestExpense.category ||
                         "Other"}
 
@@ -486,7 +674,9 @@ function AIInsights() {
 
                   </div>
 
-                  <div className="text-2xl font-bold text-white">
+                  <div
+                    className={`text-2xl font-bold ${cardText}`}
+                  >
                     {formatCurrency(
                       analysis.highestExpense.amount
                     )}
@@ -502,7 +692,13 @@ function AIInsights() {
                 FINAL TIP
             ================================================= */}
 
-            <div className="mt-6 rounded-3xl border border-blue-500/20 bg-[#0b1728] p-6">
+            <div
+              className={`mt-6 rounded-3xl border p-6 transition-colors duration-300 ${
+                darkMode
+                  ? "border-blue-500/20 bg-[#0b1728]"
+                  : "border-blue-200 bg-white"
+              }`}
+            >
 
               <div className="flex gap-4">
 
@@ -512,15 +708,18 @@ function AIInsights() {
 
                 <div>
 
-                  <h3 className="font-bold text-white">
+                  <h3
+                    className={`font-bold ${cardText}`}
+                  >
                     Smart Saving Tip
                   </h3>
 
-                  <p className="text-sm text-slate-400 mt-1 leading-relaxed">
-
+                  <p
+                    className={`text-sm mt-1 leading-relaxed ${secondaryText}`}
+                  >
                     Your largest spending category is{" "}
 
-                    <span className="font-semibold text-emerald-400">
+                    <span className="font-semibold text-emerald-500">
                       {analysis.highestCategory}
                     </span>
 
@@ -528,7 +727,6 @@ function AIInsights() {
                     your recent transactions in this category
                     and set a realistic spending limit for the
                     next month.
-
                   </p>
 
                 </div>

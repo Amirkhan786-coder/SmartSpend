@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useExpenses } from "../context/ExpenseContext";
+import { getCurrentUser } from "../utils/auth";
 
 const categoryIcons = {
   Food: "🍔",
@@ -26,11 +27,45 @@ function Expenses() {
   const [showModal, setShowModal] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
 
+  // =========================
+  // CURRENT USER
+  // =========================
+
+  const currentUser = getCurrentUser();
+
+  const userName =
+    currentUser?.name ||
+    currentUser?.username ||
+    currentUser?.fullName ||
+    currentUser?.email?.split("@")[0] ||
+    "User";
+
+  const userInitial =
+    userName?.charAt(0)?.toUpperCase() || "U";
+
+  // =========================
+  // DEFAULT DATE
+  // =========================
+
+  const getToday = () => {
+    const today = new Date();
+
+    const year = today.getFullYear();
+    const month = String(
+      today.getMonth() + 1
+    ).padStart(2, "0");
+    const day = String(
+      today.getDate()
+    ).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
   const [form, setForm] = useState({
     title: "",
     amount: "",
     category: "Food",
-    date: "2026-08-13",
+    date: getToday(),
   });
 
   // =========================
@@ -39,7 +74,9 @@ function Expenses() {
 
   const filteredExpenses = useMemo(() => {
     return expenses.filter((expense) => {
-      const matchesSearch = expense.title
+      const matchesSearch = String(
+        expense.title || ""
+      )
         .toLowerCase()
         .includes(search.toLowerCase());
 
@@ -57,7 +94,7 @@ function Expenses() {
 
   const filteredTotal = filteredExpenses.reduce(
     (total, expense) =>
-      total + Number(expense.amount),
+      total + Number(expense.amount || 0),
     0
   );
 
@@ -101,7 +138,7 @@ function Expenses() {
         title: "",
         amount: "",
         category: "Food",
-        date: "2026-08-13",
+        date: getToday(),
       });
 
       setShowModal(false);
@@ -152,6 +189,8 @@ function Expenses() {
   // =========================
 
   const formatDate = (date) => {
+    if (!date) return "";
+
     return new Date(
       `${date}T00:00:00`
     ).toLocaleDateString("en-IN", {
@@ -169,12 +208,14 @@ function Expenses() {
       ========================= */}
 
       <header className="h-16 border-b border-slate-800">
+
         <div className="h-full px-6 flex items-center justify-between">
 
           <Link
             to="/dashboard"
             className="flex items-center gap-2"
           >
+
             <div className="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center">
               💰
             </div>
@@ -185,6 +226,7 @@ function Expenses() {
                 Spend
               </span>
             </span>
+
           </Link>
 
           <div className="flex items-center gap-4">
@@ -193,12 +235,19 @@ function Expenses() {
               🔔
             </span>
 
-            <div className="w-9 h-9 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-bold">
-              A
+            {/* CURRENT USER AVATAR */}
+
+            <div
+              className="w-9 h-9 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-bold"
+              title={userName}
+            >
+              {userInitial}
             </div>
 
           </div>
+
         </div>
+
       </header>
 
       <div className="flex">
@@ -288,6 +337,7 @@ function Expenses() {
             </Link>
 
           </div>
+
         </aside>
 
         {/* =========================
@@ -341,9 +391,9 @@ function Expenses() {
 
               <h2 className="text-2xl font-bold mt-2">
                 ₹
-                {totalExpenses.toLocaleString(
-                  "en-IN"
-                )}
+                {Number(
+                  totalExpenses || 0
+                ).toLocaleString("en-IN")}
               </h2>
 
             </div>
@@ -402,6 +452,7 @@ function Expenses() {
                 }
                 className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-slate-300 outline-none focus:border-emerald-500"
               >
+
                 <option value="All">
                   All Categories
                 </option>
@@ -437,6 +488,7 @@ function Expenses() {
                 <option value="Other">
                   Other
                 </option>
+
               </select>
 
             </div>
@@ -496,7 +548,11 @@ function Expenses() {
                       <div className="flex items-center gap-4">
 
                         <div className="w-12 h-12 rounded-xl bg-slate-950 flex items-center justify-center text-xl">
-                          {expense.icon}
+                          {expense.icon ||
+                            categoryIcons[
+                              expense.category
+                            ] ||
+                            "📦"}
                         </div>
 
                         <div>
@@ -528,7 +584,7 @@ function Expenses() {
                         <span className="font-semibold text-red-400">
                           -₹
                           {Number(
-                            expense.amount
+                            expense.amount || 0
                           ).toLocaleString(
                             "en-IN"
                           )}
@@ -662,6 +718,7 @@ function Expenses() {
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-slate-300 outline-none focus:border-emerald-500"
                 >
+
                   <option value="Food">
                     Food
                   </option>
@@ -693,6 +750,7 @@ function Expenses() {
                   <option value="Other">
                     Other
                   </option>
+
                 </select>
 
               </div>
