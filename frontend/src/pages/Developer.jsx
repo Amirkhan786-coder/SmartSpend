@@ -26,28 +26,25 @@ function Developer() {
 
           <Link
             to="/dashboard"
-            className="flex items-center gap-2"
+            className="text-xl font-bold"
           >
-            <div className="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center">
-              💰
-            </div>
-
-            <span className="text-xl font-bold">
-              Smart
-              <span className="text-emerald-400">
-                Spend
-              </span>
+            Smart
+            <span className="text-emerald-400">
+              Spend
             </span>
           </Link>
 
           <div className="flex items-center gap-4">
-            <span className="text-xl">
-              👨‍💻
-            </span>
 
-            <div className="w-9 h-9 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-bold">
-              A
-            </div>
+            {/* NOTIFICATION - KEPT */}
+            <button
+              type="button"
+              className="w-9 h-9 rounded-lg hover:bg-slate-900 transition text-lg"
+              title="Notifications"
+            >
+              🔔
+            </button>
+
           </div>
 
         </div>
@@ -66,42 +63,37 @@ function Developer() {
 
             <Link
               to="/dashboard"
-              className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
+              className="flex items-center px-3 py-3 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
             >
-              <span>🏠</span>
-              <span>Dashboard</span>
+              Dashboard
             </Link>
 
             <Link
               to="/expenses"
-              className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
+              className="flex items-center px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
             >
-              <span>💳</span>
-              <span>Expenses</span>
+              Expenses
             </Link>
 
             <Link
               to="/budgets"
-              className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
+              className="flex items-center px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
             >
-              <span>💰</span>
-              <span>Budgets</span>
+              Budgets
             </Link>
 
             <Link
               to="/analytics"
-              className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
+              className="flex items-center px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
             >
-              <span>📊</span>
-              <span>Analytics</span>
+              Analytics
             </Link>
 
             <Link
               to="/ai-insights"
-              className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
+              className="flex items-center px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
             >
-              <span>🤖</span>
-              <span>AI Insights</span>
+              AI Insights
             </Link>
 
             <div className="border-t border-slate-800 my-6" />
@@ -112,17 +104,15 @@ function Developer() {
 
             <Link
               to="/settings"
-              className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
+              className="flex items-center px-3 py-3 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
             >
-              <span>⚙️</span>
-              <span>Settings</span>
+              Settings
             </Link>
 
             <Link
               to="/developer"
-              className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl bg-emerald-500/10 text-emerald-400"
+              className="flex items-center px-3 py-3 mt-1 rounded-xl bg-emerald-500/10 text-emerald-400"
             >
-              <span>👨‍💻</span>
               <span className="font-medium">
                 Developer
               </span>
@@ -131,10 +121,9 @@ function Developer() {
             <button
               type="button"
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-3 mt-1 rounded-xl text-red-400 hover:bg-red-500/10 transition text-left cursor-pointer"
+              className="w-full flex items-center px-3 py-3 mt-1 rounded-xl text-red-400 hover:bg-red-500/10 transition text-left cursor-pointer"
             >
-              <span>🚪</span>
-              <span>Logout</span>
+              Logout
             </button>
 
           </div>
@@ -336,26 +325,22 @@ function Developer() {
 
                 <div className="flex flex-col sm:flex-row gap-3">
 
-                  {/* GITHUB */}
                   <a
                     href="https://github.com/Amirkhan786-coder"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-950 border border-slate-700 hover:border-emerald-500 hover:text-emerald-400 transition cursor-pointer"
+                    className="flex items-center justify-center px-5 py-3 rounded-xl bg-slate-950 border border-slate-700 hover:border-emerald-500 hover:text-emerald-400 transition cursor-pointer"
                   >
-                    💻
-                    <span>GitHub</span>
+                    GitHub
                   </a>
 
-                  {/* LINKEDIN */}
                   <a
                     href="https://www.linkedin.com/in/md-amir-khan-91amir35khan/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-950 border border-slate-700 hover:border-emerald-500 hover:text-emerald-400 transition cursor-pointer"
+                    className="flex items-center justify-center px-5 py-3 rounded-xl bg-slate-950 border border-slate-700 hover:border-emerald-500 hover:text-emerald-400 transition cursor-pointer"
                   >
-                    🔗
-                    <span>LinkedIn</span>
+                    LinkedIn
                   </a>
 
                 </div>

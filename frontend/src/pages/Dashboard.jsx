@@ -5,7 +5,8 @@ import { useExpenses } from "../context/ExpenseContext";
 import { useIncome } from "../context/IncomeContext";
 import { getCurrentUser } from "../utils/auth";
 
-const API_URL = "https://smartspend-backend-b8h9.onrender.com/api";
+const API_URL =
+  "https://smartspend-backend-b8h9.onrender.com/api";
 
 function Dashboard() {
   const { expenses, totalExpenses } = useExpenses();
@@ -19,16 +20,28 @@ function Dashboard() {
 
   const currentUser = getCurrentUser();
 
+  // =====================================================
+  // THEME
+  // =====================================================
+
   const [darkMode, setDarkMode] = useState(
     () =>
       localStorage.getItem("smartSpendTheme") !== "light"
   );
+
+  // =====================================================
+  // MODALS
+  // =====================================================
 
   const [showIncomeModal, setShowIncomeModal] =
     useState(false);
 
   const [showIncomeList, setShowIncomeList] =
     useState(false);
+
+  // =====================================================
+  // USER NAME
+  // =====================================================
 
   const [userName, setUserName] = useState(
     currentUser?.name || "User"
@@ -63,7 +76,9 @@ function Dashboard() {
 
   useEffect(() => {
     const fetchUserSettings = async () => {
-      const userId = localStorage.getItem("userId");
+      const userId =
+        localStorage.getItem("userId") ||
+        localStorage.getItem("user_id");
 
       if (!userId) {
         setUserName(currentUser?.name || "User");
@@ -120,7 +135,9 @@ function Dashboard() {
   // CALCULATIONS
   // =====================================================
 
-  const balance = totalIncome - totalExpenses;
+  const balance =
+    Number(totalIncome || 0) -
+    Number(totalExpenses || 0);
 
   const remainingPercentage =
     totalIncome > 0
@@ -668,9 +685,7 @@ function Dashboard() {
                 <div className="flex items-center justify-between mb-6">
 
                   <div>
-                    <p
-                      className={`text-xs uppercase tracking-wider text-emerald-500 font-semibold`}
-                    >
+                    <p className="text-xs uppercase tracking-wider text-emerald-500 font-semibold">
                       Financial Insight
                     </p>
 
@@ -1120,7 +1135,7 @@ function Dashboard() {
                 onClick={() =>
                   setShowIncomeModal(false)
                 }
-                className={`w-9 h-9 rounded-lg transition ${
+                className={`w-9 h-9 rounded-lg text-lg transition ${
                   darkMode
                     ? "text-slate-400 hover:bg-slate-800"
                     : "text-slate-500 hover:bg-slate-100"
@@ -1285,7 +1300,7 @@ function Dashboard() {
                 onClick={() =>
                   setShowIncomeList(false)
                 }
-                className={`w-9 h-9 rounded-lg transition ${
+                className={`w-9 h-9 rounded-lg text-lg transition ${
                   darkMode
                     ? "text-slate-400 hover:bg-slate-800"
                     : "text-slate-500 hover:bg-slate-100"
@@ -1354,7 +1369,6 @@ function Dashboard() {
                             )
                           }
                           className="px-2 py-1 rounded-lg text-xs text-red-500 hover:bg-red-500/10 transition"
-                          title="Delete income"
                         >
                           Delete
                         </button>

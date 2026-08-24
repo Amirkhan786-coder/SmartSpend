@@ -9,17 +9,9 @@ import {
 function Settings() {
   const navigate = useNavigate();
 
-  // =====================================================
-  // USER ID
-  // =====================================================
-
   const userId =
     localStorage.getItem("userId") ||
     localStorage.getItem("user_id");
-
-  // =====================================================
-  // USER SETTINGS
-  // =====================================================
 
   const [settings, setSettings] = useState({
     name: "",
@@ -32,29 +24,15 @@ function Settings() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
 
-  // =====================================================
-  // DEVELOPER INFORMATION
-  // IMPORTANT:
-  // These details are STATIC.
-  // They do NOT depend on logged-in user.
-  // =====================================================
-
   const developer = {
     name: "Md Amir Khan",
     role: "Full Stack Developer",
     description: "Developer & Creator of SmartSpend",
     initials: "A",
-
-    github:
-      "https://github.com/Amirkhan786-coder",
-
+    github: "https://github.com/Amirkhan786-coder",
     linkedin:
       "https://www.linkedin.com/in/md-amir-khan-91amir35khan/",
   };
-
-  // =====================================================
-  // LOAD SETTINGS
-  // =====================================================
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -95,10 +73,6 @@ function Settings() {
     loadSettings();
   }, [userId]);
 
-  // =====================================================
-  // INPUT CHANGE
-  // =====================================================
-
   const handleChange = (e) => {
     const {
       name,
@@ -115,10 +89,6 @@ function Settings() {
           : value,
     }));
   };
-
-  // =====================================================
-  // UPDATE LOCAL USER
-  // =====================================================
 
   const updateLocalUser = (
     newName,
@@ -210,10 +180,6 @@ function Settings() {
     }
   };
 
-  // =====================================================
-  // SAVE SETTINGS
-  // =====================================================
-
   const handleSave = async (e) => {
     e.preventDefault();
 
@@ -272,17 +238,22 @@ function Settings() {
             true,
         };
 
-        setSettings(
-          finalSettings
-        );
+        setSettings(finalSettings);
 
         updateLocalUser(
           finalSettings.name,
           finalSettings.email
         );
 
+        localStorage.setItem(
+          "smartSpendTheme",
+          finalSettings.darkMode
+            ? "dark"
+            : "light"
+        );
+
         setMessage(
-          "Settings saved successfully ✅"
+          "Settings saved successfully"
         );
       } else {
         setMessage(
@@ -304,10 +275,6 @@ function Settings() {
     }
   };
 
-  // =====================================================
-  // LOGOUT
-  // =====================================================
-
   const handleLogout = () => {
     localStorage.removeItem("userId");
     localStorage.removeItem("user_id");
@@ -322,10 +289,6 @@ function Settings() {
     });
   };
 
-  // =====================================================
-  // OPEN GITHUB
-  // =====================================================
-
   const openGitHub = () => {
     window.open(
       developer.github,
@@ -333,10 +296,6 @@ function Settings() {
       "noopener,noreferrer"
     );
   };
-
-  // =====================================================
-  // OPEN LINKEDIN
-  // =====================================================
 
   const openLinkedIn = () => {
     window.open(
@@ -346,78 +305,44 @@ function Settings() {
     );
   };
 
-  // =====================================================
-  // LOADING
-  // =====================================================
-
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-        <div className="text-center">
-
-          <div className="text-4xl mb-4">
-            ⚙️
-          </div>
-
-          <p className="text-slate-400">
-            Loading settings...
-          </p>
-
-        </div>
+        <p className="text-slate-400">
+          Loading settings...
+        </p>
       </div>
     );
   }
 
-  // =====================================================
-  // UI
-  // =====================================================
-
   return (
     <div className="min-h-screen bg-slate-950 text-white">
 
-      {/* =================================================
-          HEADER
-      ================================================= */}
-
+      {/* HEADER */}
       <header className="h-16 border-b border-slate-800">
 
         <div className="h-full px-6 flex items-center justify-between">
 
           <Link
             to="/dashboard"
-            className="flex items-center gap-2"
+            className="text-xl font-bold"
           >
-
-            <div className="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center">
-              💰
-            </div>
-
-            <span className="text-xl font-bold">
-              Smart
-              <span className="text-emerald-400">
-                Spend
-              </span>
+            Smart
+            <span className="text-emerald-400">
+              Spend
             </span>
-
           </Link>
 
           <div className="flex items-center gap-4">
 
+            {/* NOTIFICATION - KEPT */}
             <button
               type="button"
-              className="w-9 h-9 rounded-lg hover:bg-slate-900 transition"
+              className="w-9 h-9 rounded-lg hover:bg-slate-900 transition text-lg"
               title="Notifications"
             >
               🔔
             </button>
-
-            <div className="w-9 h-9 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-bold">
-              {settings.name
-                ? settings.name
-                    .charAt(0)
-                    .toUpperCase()
-                : "U"}
-            </div>
 
           </div>
 
@@ -425,16 +350,9 @@ function Settings() {
 
       </header>
 
-      {/* =================================================
-          PAGE
-      ================================================= */}
-
       <div className="flex">
 
-        {/* =================================================
-            SIDEBAR
-        ================================================= */}
-
+        {/* SIDEBAR */}
         <aside className="hidden md:block w-64 min-h-[calc(100vh-4rem)] border-r border-slate-800">
 
           <div className="p-4">
@@ -445,42 +363,37 @@ function Settings() {
 
             <Link
               to="/dashboard"
-              className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
+              className="flex items-center px-3 py-3 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
             >
-              <span>🏠</span>
-              <span>Dashboard</span>
+              Dashboard
             </Link>
 
             <Link
               to="/expenses"
-              className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
+              className="flex items-center px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
             >
-              <span>💳</span>
-              <span>Expenses</span>
+              Expenses
             </Link>
 
             <Link
               to="/budgets"
-              className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
+              className="flex items-center px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
             >
-              <span>💰</span>
-              <span>Budgets</span>
+              Budgets
             </Link>
 
             <Link
               to="/analytics"
-              className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
+              className="flex items-center px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
             >
-              <span>📊</span>
-              <span>Analytics</span>
+              Analytics
             </Link>
 
             <Link
               to="/ai-insights"
-              className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
+              className="flex items-center px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
             >
-              <span>🤖</span>
-              <span>AI Insights</span>
+              AI Insights
             </Link>
 
             <div className="border-t border-slate-800 my-6" />
@@ -491,32 +404,32 @@ function Settings() {
 
             <Link
               to="/settings"
-              className="flex items-center gap-3 px-3 py-3 rounded-xl bg-emerald-500/10 text-emerald-400"
+              className="flex items-center px-3 py-3 rounded-xl bg-emerald-500/10 text-emerald-400"
             >
-              <span>⚙️</span>
-              <span>Settings</span>
+              Settings
+            </Link>
+
+            <Link
+              to="/developer"
+              className="flex items-center px-3 py-3 mt-1 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white transition"
+            >
+              Developer
             </Link>
 
             <button
               type="button"
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-3 mt-1 rounded-xl text-red-400 hover:bg-red-500/10 transition text-left cursor-pointer"
+              className="w-full flex items-center px-3 py-3 mt-1 rounded-xl text-red-400 hover:bg-red-500/10 transition text-left cursor-pointer"
             >
-              <span>🚪</span>
-              <span>Logout</span>
+              Logout
             </button>
 
           </div>
 
         </aside>
 
-        {/* =================================================
-            MAIN CONTENT
-        ================================================= */}
-
+        {/* MAIN */}
         <main className="flex-1 p-6 md:p-8">
-
-          {/* PAGE HEADER */}
 
           <div className="mb-8">
 
@@ -534,14 +447,10 @@ function Settings() {
 
           </div>
 
-          {/* MESSAGE */}
-
           {message && (
             <div
               className={`mb-6 px-4 py-3 rounded-xl border ${
-                message.includes(
-                  "successfully"
-                )
+                message.includes("successfully")
                   ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
                   : "bg-red-500/10 border-red-500/20 text-red-400"
               }`}
@@ -550,42 +459,28 @@ function Settings() {
             </div>
           )}
 
-          {/* =================================================
-              SETTINGS FORM
-          ================================================= */}
-
+          {/* SETTINGS FORM */}
           <form
             onSubmit={handleSave}
             className="max-w-3xl space-y-6"
           >
 
             {/* PROFILE */}
-
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
 
-              <div className="flex items-center gap-3 mb-6">
+              <div className="mb-6">
 
-                <div className="w-11 h-11 rounded-xl bg-emerald-500/10 flex items-center justify-center text-xl">
-                  👤
-                </div>
+                <h2 className="text-lg font-semibold">
+                  Profile
+                </h2>
 
-                <div>
-
-                  <h2 className="text-lg font-semibold">
-                    Profile
-                  </h2>
-
-                  <p className="text-sm text-slate-500">
-                    Update your personal information.
-                  </p>
-
-                </div>
+                <p className="text-sm text-slate-500">
+                  Update your personal information.
+                </p>
 
               </div>
 
               <div className="space-y-5">
-
-                {/* NAME */}
 
                 <div>
 
@@ -603,8 +498,6 @@ function Settings() {
                   />
 
                 </div>
-
-                {/* EMAIL */}
 
                 <div>
 
@@ -627,34 +520,22 @@ function Settings() {
 
             </div>
 
-            {/* =================================================
-                PREFERENCES
-            ================================================= */}
-
+            {/* PREFERENCES */}
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
 
-              <div className="flex items-center gap-3 mb-6">
+              <div className="mb-6">
 
-                <div className="w-11 h-11 rounded-xl bg-blue-500/10 flex items-center justify-center text-xl">
-                  ⚙️
-                </div>
+                <h2 className="text-lg font-semibold">
+                  Preferences
+                </h2>
 
-                <div>
-
-                  <h2 className="text-lg font-semibold">
-                    Preferences
-                  </h2>
-
-                  <p className="text-sm text-slate-500">
-                    Customize your SmartSpend experience.
-                  </p>
-
-                </div>
+                <p className="text-sm text-slate-500">
+                  Customize your SmartSpend experience.
+                </p>
 
               </div>
 
               {/* NOTIFICATIONS */}
-
               <div className="flex items-center justify-between py-4 border-b border-slate-800">
 
                 <div>
@@ -686,7 +567,6 @@ function Settings() {
               </div>
 
               {/* DARK MODE */}
-
               <div className="flex items-center justify-between py-4">
 
                 <div>
@@ -720,7 +600,6 @@ function Settings() {
             </div>
 
             {/* SAVE */}
-
             <div className="flex justify-end">
 
               <button
@@ -737,38 +616,22 @@ function Settings() {
 
           </form>
 
-          {/* =================================================
-              DEVELOPER INFORMATION
-              STATIC — SAME FOR EVERY USER
-          ================================================= */}
-
+          {/* DEVELOPER INFORMATION */}
           <section className="max-w-3xl mt-8">
 
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
 
-              {/* HEADER */}
+              <div className="mb-6">
 
-              <div className="flex items-center gap-3 mb-6">
+                <h2 className="text-lg font-semibold">
+                  Developer Information
+                </h2>
 
-                <div className="w-11 h-11 rounded-xl bg-purple-500/10 flex items-center justify-center text-xl">
-                  👨‍💻
-                </div>
-
-                <div>
-
-                  <h2 className="text-lg font-semibold">
-                    Developer Information
-                  </h2>
-
-                  <p className="text-sm text-slate-500">
-                    About the developer and creator of SmartSpend.
-                  </p>
-
-                </div>
+                <p className="text-sm text-slate-500">
+                  About the developer and creator of SmartSpend.
+                </p>
 
               </div>
-
-              {/* DEVELOPER PROFILE */}
 
               <div className="flex flex-col sm:flex-row sm:items-center gap-5 pb-6 border-b border-slate-800">
 
@@ -793,8 +656,6 @@ function Settings() {
                 </div>
 
               </div>
-
-              {/* PROJECT INFORMATION */}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
 
@@ -832,8 +693,6 @@ function Settings() {
 
               </div>
 
-              {/* KEY FEATURES */}
-
               <div className="mt-6">
 
                 <p className="text-xs uppercase tracking-wider text-slate-500 mb-3">
@@ -842,37 +701,25 @@ function Settings() {
 
                 <div className="flex flex-wrap gap-2">
 
-                  <span className="px-3 py-2 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-medium">
-                    Expense Tracking
-                  </span>
-
-                  <span className="px-3 py-2 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-medium">
-                    Income Management
-                  </span>
-
-                  <span className="px-3 py-2 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-medium">
-                    Budget Management
-                  </span>
-
-                  <span className="px-3 py-2 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-medium">
-                    Analytics
-                  </span>
-
-                  <span className="px-3 py-2 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-medium">
-                    AI Insights
-                  </span>
-
-                  <span className="px-3 py-2 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-medium">
-                    Multi-Account Data
-                  </span>
+                  {[
+                    "Expense Tracking",
+                    "Income Management",
+                    "Budget Management",
+                    "Analytics",
+                    "AI Insights",
+                    "Multi-Account Data",
+                  ].map((feature) => (
+                    <span
+                      key={feature}
+                      className="px-3 py-2 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-medium"
+                    >
+                      {feature}
+                    </span>
+                  ))}
 
                 </div>
 
               </div>
-
-              {/* =================================================
-                  DEVELOPER LINKS
-              ================================================= */}
 
               <div className="mt-6 pt-6 border-t border-slate-800">
 
@@ -882,33 +729,25 @@ function Settings() {
 
                 <div className="flex flex-col sm:flex-row gap-3">
 
-                  {/* GITHUB */}
-
                   <button
                     type="button"
                     onClick={openGitHub}
-                    className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-950 border border-slate-700 hover:border-emerald-500 hover:text-emerald-400 transition cursor-pointer"
+                    className="flex items-center justify-center px-5 py-3 rounded-xl bg-slate-950 border border-slate-700 hover:border-emerald-500 hover:text-emerald-400 transition cursor-pointer"
                   >
-                    <span>💻</span>
-                    <span>GitHub</span>
+                    GitHub
                   </button>
-
-                  {/* LINKEDIN */}
 
                   <button
                     type="button"
                     onClick={openLinkedIn}
-                    className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-950 border border-slate-700 hover:border-emerald-500 hover:text-emerald-400 transition cursor-pointer"
+                    className="flex items-center justify-center px-5 py-3 rounded-xl bg-slate-950 border border-slate-700 hover:border-emerald-500 hover:text-emerald-400 transition cursor-pointer"
                   >
-                    <span>🔗</span>
-                    <span>LinkedIn</span>
+                    LinkedIn
                   </button>
 
                 </div>
 
               </div>
-
-              {/* FOOTER */}
 
               <div className="mt-6 pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
 
