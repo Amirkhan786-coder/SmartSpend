@@ -62,27 +62,22 @@ function DashboardLayout({ children }) {
   const menuItems = [
     {
       path: "/dashboard",
-      icon: "🏠",
       label: "Dashboard",
     },
     {
       path: "/expenses",
-      icon: "💳",
       label: "Expenses",
     },
     {
       path: "/budgets",
-      icon: "💰",
       label: "Budgets",
     },
     {
       path: "/analytics",
-      icon: "📊",
       label: "Analytics",
     },
     {
       path: "/ai-insights",
-      icon: "🤖",
       label: "AI Insights",
     },
   ];
@@ -94,12 +89,10 @@ function DashboardLayout({ children }) {
   const accountItems = [
     {
       path: "/settings",
-      icon: "⚙️",
       label: "Settings",
     },
     {
       path: "/developer",
-      icon: "👨‍💻",
       label: "About Developer",
     },
   ];
@@ -133,17 +126,13 @@ function DashboardLayout({ children }) {
       >
         <div className="h-full px-4 md:px-6 flex items-center justify-between">
 
-          {/* LOGO */}
+          {/* BRAND */}
 
           <Link
             to="/dashboard"
-            className="flex items-center gap-3"
+            className="flex items-center"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-xl shadow-lg shadow-emerald-500/20">
-              💰
-            </div>
-
-            <div className="hidden sm:block">
+            <div>
               <h1 className="text-lg font-bold leading-none">
                 Smart
                 <span className="text-emerald-500">
@@ -269,7 +258,7 @@ function DashboardLayout({ children }) {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`group flex items-center gap-3 px-3 py-3 rounded-xl transition-all ${
+                  className={`group flex items-center px-3 py-3 rounded-xl transition-all ${
                     active
                       ? "bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/10"
                       : darkMode
@@ -277,10 +266,6 @@ function DashboardLayout({ children }) {
                       : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                   }`}
                 >
-                  <span className="text-lg">
-                    {item.icon}
-                  </span>
-
                   <span className="font-medium text-sm">
                     {item.label}
                   </span>
@@ -327,7 +312,7 @@ function DashboardLayout({ children }) {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-3 px-3 py-3 rounded-xl transition ${
+                  className={`flex items-center px-3 py-3 rounded-xl transition ${
                     active
                       ? "bg-emerald-500/10 text-emerald-500"
                       : darkMode
@@ -335,10 +320,6 @@ function DashboardLayout({ children }) {
                       : "text-slate-600 hover:bg-slate-100"
                   }`}
                 >
-                  <span className="text-lg">
-                    {item.icon}
-                  </span>
-
                   <span className="font-medium text-sm">
                     {item.label}
                   </span>
@@ -351,52 +332,16 @@ function DashboardLayout({ children }) {
             <button
               type="button"
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition text-left"
+              className={`w-full flex items-center px-3 py-3 rounded-xl transition text-left text-sm font-medium ${
+                darkMode
+                  ? "text-red-400 hover:bg-red-500/10"
+                  : "text-red-500 hover:bg-red-50"
+              }`}
             >
-              <span className="text-lg">
-                🚪
-              </span>
-
-              <span className="font-medium text-sm">
-                Logout
-              </span>
+              Logout
             </button>
 
           </nav>
-
-        </div>
-
-        {/* =========================
-            PRO CARD
-        ========================= */}
-
-        <div className="p-4">
-
-          <div
-            className={`rounded-2xl p-4 border ${
-              darkMode
-                ? "bg-gradient-to-br from-emerald-500/10 to-slate-900 border-emerald-500/20"
-                : "bg-gradient-to-br from-emerald-50 to-white border-emerald-100"
-            }`}
-          >
-
-            <div className="flex items-center gap-2 mb-2">
-
-              <span className="text-lg">
-                ✨
-              </span>
-
-              <span className="font-semibold text-sm">
-                SmartSpend Pro
-              </span>
-
-            </div>
-
-            <p className="text-xs leading-relaxed text-slate-500">
-              Track smarter. Spend better.
-            </p>
-
-          </div>
 
         </div>
 
@@ -419,4 +364,3 @@ function DashboardLayout({ children }) {
 }
 
 export default DashboardLayout;
-
